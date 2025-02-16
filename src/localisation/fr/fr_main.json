@@ -140,7 +140,8 @@
     "prefs": "Préférences",
     "lang": "Langue: ",
     "homepage": "Page d'accueil de Strype",
-    "version": "Version"
+    "version": "Version",
+    "tutorial": "Tutoriels"
   },
   "autoCompletion": {
     "myFunctions": "Mes fonctions",

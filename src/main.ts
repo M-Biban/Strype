@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import vBlur from "v-blur";
 import { StrypePlatform } from "./types/types";
+import router from "./router";
 
 Vue.config.productionTip = false;
 
@@ -55,6 +56,7 @@ Vue.config.productionTip = false;
 export const vm = new Vue({
     pinia,
     i18n,
+    router,
     render: (h) => h(App),
 });
 vm.$mount("#app");
