@@ -2812,5 +2812,13 @@ export const useStore = defineStore("app", {
                 this.selectMultipleFrames(direction);
             } while (previousFramesSelection.length !== this.selectedFrames.length && !this.selectedFrames.includes(stopId));
         },
+
+        initialiseTutorialState() {
+            const is: StateAppObject = initialStates["initialTut1State"];
+            this.frameObjects = cloneDeep(is.initialState);
+            this.debugging = is.debugging;
+            this.showKeystroke = is.showKeystroke;
+            this.nextAvailableId = is.nextAvailableId;
+        },
     },
 });

@@ -1,9 +1,9 @@
 <template>
     <div id="app" class="container-fluid print-full-height">
-        <div v-if=isTutorialPage>
+        <!-- <div v-if=isTutorialPage>
 
         </div>
-        <div v-else>
+        <div v-else> -->
         <div v-if="showAppProgress || setAppNotOnTop" :class="{'app-overlay-pane': true, 'app-progress-pane': showAppProgress}" @contextmenu="handleOverlayRightClick">
             <div v-if="showAppProgress" class="app-progress-container">
                 <div class="progress">
@@ -80,7 +80,7 @@
         </ModalDlg>
         <div :id="getSkulptBackendTurtleDivId" class="hidden"></div>
         <canvas v-show="appStore.isDraggingFrame" :id="getCompanionDndCanvasId" class="companion-canvas-dnd"/>
-    </div>
+    <!-- </div> -->
     <router-view /> <!-- This is where pages load -->
     </div>
 </template>
