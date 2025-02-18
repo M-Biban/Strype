@@ -2819,6 +2819,14 @@ export const useStore = defineStore("app", {
             this.debugging = is.debugging;
             this.showKeystroke = is.showKeystroke;
             this.nextAvailableId = is.nextAvailableId;
+
+            this.currentFrame = { id: -3, caretPosition: CaretPosition.body};
+            this.selectedFrames = [];
+            this.copiedFrames = {};
+            this.isEditing = false;
+            this.isDraggingFrame = false;
+            this.preCompileErrors = [];
+            this.errorCount = 0;
         },
     },
 });

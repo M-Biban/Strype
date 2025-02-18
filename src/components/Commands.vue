@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div v-if=isTutorialPage1>
-                <h1>This is tutorial page 1</h1>
+                <button>Click Me!</button>
             </div>     
             <div @mousedown.prevent.stop @mouseup.prevent.stop>
                 /* IFTRUE_isMicrobit
