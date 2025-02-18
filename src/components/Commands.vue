@@ -10,10 +10,7 @@
                     <span class="gdrive-sync-label" v-if=" (isProjectFromGoogleDrive || isProjectFromFS) && !isEditorContentModifiedFlag" v-t="'appMessage.savedGDrive'" />
                     <span class="gdrive-sync-label" v-else-if="isEditorContentModifiedFlag" v-t="'appMessage.modifGDrive'" />
                 </div>
-            </div>
-            <div v-if=isTutorialPage1>
-                <button>Click Me!</button>
-            </div>     
+            </div>  
             <div @mousedown.prevent.stop @mouseup.prevent.stop>
                 /* IFTRUE_isMicrobit
                 <b-tabs id="commandsTabs" content-class="mt-2" v-model="tabIndex">
@@ -193,10 +190,6 @@ export default Vue.extend({
 
         progressPercentWidthStyle(): string {
             return "width: " + this.progressPercent + "%;";
-        },
-
-        isTutorialPage1(): boolean {
-            return this.$route.path === "/tut1";
         },
     },
 
@@ -574,6 +567,7 @@ export default Vue.extend({
     },
 
     methods: {
+
         addFrameCommandUID(commandType: string): string {
             return getAddFrameCmdElementUID(commandType);
         },

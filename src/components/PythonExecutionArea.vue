@@ -1,6 +1,7 @@
 
 <template>
     <div id="peaComponent" :class="{'expanded-PEA': isExpandedPEA}" ref="peaComponent" @mousedown="handlePEAMouseDown">
+        <div v-if=isTutorialPage1><button @click="runClicked">hello</button></div>
         <div id="peaControlsDiv" :class="{'expanded-PEA-controls': isExpandedPEA}">           
             <b-tabs v-model="peaDisplayTabIndex" no-key-nav>
                 <b-tab :title="'\u2771\u23BD '+$t('PEA.console')" title-link-class="pea-display-tab" active></b-tab>
@@ -181,6 +182,10 @@ export default Vue.extend({
         isTurtleListeningEvents(): boolean {
             return this.isTurtleListeningKeyEvents || this.isTurtleListeningMouseEvents || this.isTurtleListeningTimerEvents;
         },
+
+        isTutorialPage1(): boolean {
+            return this.$route.path === "/tut1";
+        },
     },
 
     watch: {
@@ -241,7 +246,7 @@ export default Vue.extend({
             }
         },
         
-        execPythonCode() {
+        execPythonCode(additional_code = "") {
             const pythonConsole = this.$refs.pythonConsole as HTMLTextAreaElement;
             pythonConsole.value = "";
             setPythonExecAreaExpandButtonPos();
@@ -266,8 +271,11 @@ export default Vue.extend({
                 }
 
                 const parser = new Parser();
-                const userCode = parser.getFullCode();
+                let userCode = parser.getFullCode();
                 parser.getErrorsFormatted(userCode);
+                if(additional_code){
+                    userCode += additional_code;
+                }
                 // Trigger the actual Python code execution launch
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
