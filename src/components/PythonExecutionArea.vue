@@ -1,7 +1,7 @@
 
 <template>
     <div id="peaComponent" :class="{'expanded-PEA': isExpandedPEA}" ref="peaComponent" @mousedown="handlePEAMouseDown">
-        <div v-if=isTutorialPage1><button @click="runClicked">hello</button></div>
+        <div v-if=isTutorialPage1><button @click="runTests">hello</button></div>
         <div id="peaControlsDiv" :class="{'expanded-PEA-controls': isExpandedPEA}">           
             <b-tabs v-model="peaDisplayTabIndex" no-key-nav>
                 <b-tab :title="'\u2771\u23BD '+$t('PEA.console')" title-link-class="pea-display-tab" active></b-tab>
@@ -273,9 +273,7 @@ export default Vue.extend({
                 const parser = new Parser();
                 let userCode = parser.getFullCode();
                 parser.getErrorsFormatted(userCode);
-                if(additional_code){
-                    userCode += additional_code;
-                }
+                userCode += additional_code;
                 // Trigger the actual Python code execution launch
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
@@ -446,6 +444,41 @@ export default Vue.extend({
 
             if(useStore().pythonExecRunningState) {
                 useStore().pythonExecRunningState = PythonExecRunningState.RunningAwaitingStop;              
+            }
+        },
+
+        runTests() {
+            // The Python code execution has a 3-ways states:
+            // - not running when nothing happens, click will trigger "running"
+            // - running when some code is running, click will trigger "running awaiting stop"
+            // - running awaiting stop will do nothing
+            switch (useStore().pythonExecRunningState) {
+            case PythonExecRunningState.NotRunning:
+                useStore().pythonExecRunningState = PythonExecRunningState.Running;
+                this.execPythonCode("print(\"additional code\")");
+                return;
+            case PythonExecRunningState.Running:
+                // There are 2 possible scenarios, which depends on the user code:
+                // 1) the code contains some "event" listening functions but is written in a way that Turtle execution ends (Skulpt) and still listens:
+                // 2) there is no "event" listening function in the code, or the code is written in a way that Turtle execution keeps pending (Skulpt)
+
+                // Case 1): we know we are in this case when we have registered a function to call to "manually" stop the listeners,
+                // that is all that needs to be done, Skulpt has already effectively terminated, we can just call the function and change the state.
+                if(this.stopTurtleUIEventListeners){
+                    this.isTurtleListeningKeyEvents = false;
+                    this.isTurtleListeningMouseEvents = false;
+                    this.isTurtleListeningTimerEvents = false;
+                    this.updateTurtleListeningEvents();
+                    return;
+                }
+
+                // Case 2): Skulpt checks this property regularly while running, via a callback,
+                // so just setting the variable is enough to "request" a stop 
+                useStore().pythonExecRunningState = PythonExecRunningState.RunningAwaitingStop;
+                return;
+            case PythonExecRunningState.RunningAwaitingStop:
+                // Else, nothing more we can do at the moment, just waiting for Skulpt to see it
+                return;
             }
         },
     },
