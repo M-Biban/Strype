@@ -10,6 +10,9 @@
                     <span class="gdrive-sync-label" v-if=" (isProjectFromGoogleDrive || isProjectFromFS) && !isEditorContentModifiedFlag" v-t="'appMessage.savedGDrive'" />
                     <span class="gdrive-sync-label" v-else-if="isEditorContentModifiedFlag" v-t="'appMessage.modifGDrive'" />
                 </div>
+            </div>
+            <div v-if=isTutorialPage1>
+                <h1>This is tutorial page 1</h1>
             </div>     
             <div @mousedown.prevent.stop @mouseup.prevent.stop>
                 /* IFTRUE_isMicrobit
@@ -190,6 +193,10 @@ export default Vue.extend({
 
         progressPercentWidthStyle(): string {
             return "width: " + this.progressPercent + "%;";
+        },
+
+        isTutorialPage1(): boolean {
+            return this.$route.path === "/tut1";
         },
     },
 
