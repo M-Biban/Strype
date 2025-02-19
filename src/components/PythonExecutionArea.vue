@@ -1,7 +1,32 @@
 
 <template>
     <div id="peaComponent" :class="{'expanded-PEA': isExpandedPEA}" ref="peaComponent" @mousedown="handlePEAMouseDown">
-        <div v-if=isTutorialPage1><button @click="runTests">hello</button></div>
+        <div v-if=isTutorialPage1>
+            <b-carousel
+                :interval="0"
+                indicators
+                controls
+            >
+                <b-carousel-slide v-for="i in 3" :key="i">
+                    <template #img>
+                        <b-card>
+                            <b-card-title>Title {{ i }}</b-card-title>
+                            <b-card-subtitle>Sub-title</b-card-subtitle>
+                            <b-card-text>kjdukfgka af fuahfigahkg giaiufgigad g gahdfg gaidgf h</b-card-text>
+                        </b-card>
+                    </template>
+                </b-carousel-slide>
+            </b-carousel>
+            <!-- <b-button v-b-modal.modal-scrollable>Launch scrolling modal</b-button>
+
+            <b-modal id="modal-scrollable" scrollable title="Scrollable Content">
+                <p class="my-4" v-for="i in 20" :key="i">
+                Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+                in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+                </p>
+            </b-modal> -->
+            <!-- <b-button @click="runTests">hello</b-button> -->
+        </div>
         <div id="peaControlsDiv" :class="{'expanded-PEA-controls': isExpandedPEA}">           
             <b-tabs v-model="peaDisplayTabIndex" no-key-nav>
                 <b-tab :title="'\u2771\u23BD '+$t('PEA.console')" title-link-class="pea-display-tab" active></b-tab>
@@ -632,5 +657,11 @@ export default Vue.extend({
         position: absolute;
         top: 10px;
         left: 10px;
-    }    
+    }
+
+    .carousel .carousel-control-prev-icon { background-color: rgb(142, 196, 158);}
+    .carousel .carousel-control-next-icon { background-color: rgb(142, 196, 158);}
+
+    .carousel .carousel-indicators li { background-color: gray; }
+    .carousel .carousel-indicators li.active { background-color: rgb(142, 196, 158); }
 </style>
