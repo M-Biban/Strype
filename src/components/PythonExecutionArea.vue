@@ -6,6 +6,8 @@
                 :interval="0"
                 indicators
                 controls
+                v-model="currentSlide"
+                @sliding-end = "saveSlideIndex"
             >
                 <b-carousel-slide v-for="i in 3" :key="i">
                     <template #img>
@@ -91,6 +93,7 @@ export default Vue.extend({
             isTurtleListeningMouseEvents: false, // flag to indicate whether an execution of Turtle resulted in listen for mouse events on Turtle
             isTurtleListeningTimerEvents: false, // flag to indicate whether an execution of Turtle resulted in listen for timer events on Turtle
             stopTurtleUIEventListeners: undefined as ((keepShowingTurtleUI: boolean)=>void) | undefined, // registered callback method to clear the Turtle listeners mentioned above
+            currentSlide: 0, // Stores the current slide index
         };
     },
 
@@ -173,6 +176,7 @@ export default Vue.extend({
                 this.updateTurtleListeningEvents();
             });
         }
+        this.loadSavedSlide();
     },
 
     computed:{
@@ -506,6 +510,21 @@ export default Vue.extend({
                 return;
             }
         },
+
+        saveSlideIndex(slideIndex: any) {
+            localStorage.setItem("savedSlide", slideIndex);
+        },
+        
+        loadSavedSlide() {
+            const savedIndex = localStorage.getItem("savedSlide");
+            if (savedIndex !== null) {
+                this.currentSlide = parseInt(savedIndex, 10);
+            }
+        },
+    },
+
+    beforeDestroy() {
+        localStorage.removeItem("savedSlide");
     },
 
 });
