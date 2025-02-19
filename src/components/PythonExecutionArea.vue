@@ -1,7 +1,7 @@
 
 <template>
     <div id="peaComponent" :class="{'expanded-PEA': isExpandedPEA}" ref="peaComponent" @mousedown="handlePEAMouseDown">
-        <div v-if=isTutorialPage1>
+        <div v-if=isTutorialPage1 style="width: 100%">
             <b-carousel
                 :interval="0"
                 indicators
@@ -12,9 +12,11 @@
                 <b-carousel-slide v-for="i in 3" :key="i">
                     <template #img>
                         <b-card>
+                            <div style="margin-left: 32px; width: 86%">
                             <b-card-title>Title {{ i }}</b-card-title>
                             <b-card-subtitle>Sub-title</b-card-subtitle>
                             <b-card-text>kjdukfgka af fuahfigahkg giaiufgigad g gahdfg gaidgf h</b-card-text>
+                            </div>
                         </b-card>
                     </template>
                 </b-carousel-slide>
