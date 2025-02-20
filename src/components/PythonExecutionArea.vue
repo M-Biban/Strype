@@ -215,7 +215,7 @@ export default Vue.extend({
         },
 
         isTutorialPage1(): boolean {
-            return this.$route.path === "/tut1";
+            return this.$route.path.startsWith("/tut");
         },
     },
 
