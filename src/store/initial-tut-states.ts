@@ -10,6 +10,14 @@ const Tutorials : TutorialObjects = {
         initialState: initialTut1State,
         tests: Tut1Tests,
     },
+
+    "secondTutorial" : {
+        name: "second",
+        difficulty: 1,
+        url: "/tut2",
+        initialState: initialTut1State,
+        tests: Tut1Tests,
+    },
 };
 
 export default Tutorials;
