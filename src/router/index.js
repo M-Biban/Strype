@@ -7,9 +7,10 @@ import Tutorials from "@/store/initial-tut-states";
 const tutorialRoutes = Object.values(Tutorials).map((tutorial) => ({
     path: tutorial.url,
     name: tutorial.name,
-    componet: TutPage1,
-    props: { tutorialData: tutorial},
+    component: TutPage1,
 }));
+
+console.log(tutorialRoutes);
 
 Vue.use(Router);
 
