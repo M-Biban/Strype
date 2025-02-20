@@ -15,6 +15,8 @@ import $ from "jquery";
 import { BvModalEvent } from "bootstrap-vue";
 import { nextTick } from "@vue/composition-api";
 import { TPyParser } from "tigerpython-parser";
+import Tutorials from "./initial-tut-states";
+import { TutorialObject } from "@/types/tutorial-types";
 
 let initialState: StateAppObject = initialStates["initialPythonState"];
 /* IFTRUE_isMicrobit */
@@ -2813,11 +2815,11 @@ export const useStore = defineStore("app", {
             } while (previousFramesSelection.length !== this.selectedFrames.length && !this.selectedFrames.includes(stopId));
         },
 
-        initialiseTutorialState() {
-            const is: StateAppObject = initialStates["initialTut1State"];
+        initialiseTutorialState(path: string) {
+            const is: TutorialObject = Tutorials[path];
             this.frameObjects = cloneDeep(is.initialState);
-            this.debugging = is.debugging;
-            this.showKeystroke = is.showKeystroke;
+            this.debugging = false;
+            this.showKeystroke = false;
             this.nextAvailableId = is.nextAvailableId;
 
             this.currentFrame = { id: -3, caretPosition: CaretPosition.body};

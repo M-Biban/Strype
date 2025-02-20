@@ -5,7 +5,8 @@ export interface TutorialObject{
     difficulty: number;
     url: string;
     initialState: EditorFrameObjects;
-    tests: TestObjects
+    tests: TestObjects,
+    nextAvailableId: number,
 }
 
 export interface TestObject{

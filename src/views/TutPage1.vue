@@ -5,19 +5,15 @@
   
 <script lang="ts">
 import { useStore } from "@/store/store";
-import { onMounted } from "@vue/composition-api";
+import Vue from "vue";
 
-export default {
+export default Vue.extend({
     name: "TutorialPage1",
 
-    setup(): void {
-        const store = useStore();
-        
-        onMounted(() => {
-            store.initialiseTutorialState();
-        });
+    mounted() {
+        useStore().initialiseTutorialState(this.$route.path);
     },
-};
+});
 </script>
   
   <style scoped>

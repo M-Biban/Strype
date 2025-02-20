@@ -1,22 +1,25 @@
 import { TutorialObjects } from "@/types/tutorial-types";
 import initialTut1State from "./initial-states/initial-tut-1";
 import Tut1Tests from "./tut-tests/tut-1-tests";
+import initialTut2State from "./initial-states/initial-tut-2";
 
 const Tutorials : TutorialObjects = {
-    "simpleTutorial" : {
+    "/tut1" : {
         name: "simple",
         difficulty: 1,
         url: "/tut1",
         initialState: initialTut1State,
         tests: Tut1Tests,
+        nextAvailableId: 3,
     },
 
-    "secondTutorial" : {
+    "/tut2" : {
         name: "second",
         difficulty: 1,
         url: "/tut2",
-        initialState: initialTut1State,
+        initialState: initialTut2State,
         tests: Tut1Tests,
+        nextAvailableId: 3,
     },
 };
 
