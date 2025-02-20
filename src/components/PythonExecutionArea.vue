@@ -9,12 +9,12 @@
                 v-model="currentSlide"
                 @sliding-end = "saveSlideIndex"
             >
-                <b-carousel-slide v-for="i in 3" :key="i">
+                <b-carousel-slide v-for="test in getTests" :key="test">
                     <template #img>
                         <b-card>
                             <div style="margin-left: 32px; width: 86%">
-                            <b-card-title>Title {{ i }}</b-card-title>
-                            <b-card-subtitle>Sub-title</b-card-subtitle>
+                            <b-card-title>{{ test.name }}</b-card-title>
+                            <b-card-subtitle>{{ test.description }}</b-card-subtitle>
                             <b-card-text>kjdukfgka af fuahfigahkg giaiufgigad g gahdfg gaidgf h</b-card-text>
                             </div>
                         </b-card>
@@ -80,6 +80,8 @@ import { checkEditorCodeErrors, computeAddFrameCommandContainerHeight, countEdit
 import i18n from "@/i18n";
 import { PythonExecRunningState } from "@/types/types";
 import Menu from "@/components/Menu.vue";
+import Tutorials from "@/store/initial-tut-states";
+import { TestObjects, TutorialObject } from "@/types/tutorial-types";
 
 export default Vue.extend({
     name: "PythonExecutionArea",
@@ -216,6 +218,14 @@ export default Vue.extend({
 
         isTutorialPage1(): boolean {
             return this.$route.path.startsWith("/tut");
+        },
+
+        getTutorial(): TutorialObject {
+            return Tutorials[this.$route.path];
+        },
+
+        getTests() : TestObjects{
+            return (this.getTutorial as TutorialObject).tests;
         },
     },
 

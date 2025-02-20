@@ -90,5 +90,3 @@ const initialTut1State: EditorFrameObjects = {
 };
 
 export default initialTut1State;
-
-

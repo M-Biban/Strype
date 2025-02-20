@@ -5,7 +5,6 @@ import emptyState from "@/store/initial-states/empty-state";
 import initialDemoState from "@/store/initial-states/initial-demo-state";
 import initialPythonState from "@/store/initial-states/initial-python-state";
 import initialMicrobitState from "@/store/initial-states/initial-microbit-state";
-import initialTut1State from "@/store/initial-states/initial-tut-1";
 
 const initialStates: StateAppObjects = {
 
@@ -50,14 +49,6 @@ const initialStates: StateAppObjects = {
         showKeystroke: false,
         nextAvailableId: 4,
     },
-
-    "initialTut1State": {
-        debugging: false,
-        initialState: initialTut1State,
-        showKeystroke: false,
-        nextAvailableId: 3,
-    },
-
 
 };
 
