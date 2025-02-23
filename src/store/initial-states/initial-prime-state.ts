@@ -70,7 +70,6 @@ const initialPrimeState: EditorFrameObjects = {
         labelSlotsDict: {
             0: {slotStructures: {operators: [], fields: [{code: "isPrime"}]}},
             1: {slotStructures: {operators: [], fields: [{code: "num"}]}},
-            2: {slotStructures: {operators: [], fields: [{code: ""}]}},
         },
         caretVisibility: CaretPosition.none,
     },
