@@ -12,7 +12,7 @@ export interface TutorialObject{
 export interface TestObject{
     name: string;
     description: string;
-    extraInfo: string;
+    expectedOutput: string;
     test: string;
     complete: boolean;
 }

@@ -16,20 +16,19 @@
                             <b-card-title>{{ test.name }}</b-card-title>
                             <b-card-subtitle>{{ test.description }}</b-card-subtitle>
                             <b-card-text>kjdukfgka af fuahfigahkg giaiufgigad g gahdfg gaidgf h</b-card-text>
+                            <b-button v-b-modal.modal-scrollable @click="openModal(test)">Launch scrolling modal</b-button>
+                            <b-button @click="runTests(test)">hello</b-button>
                             </div>
                         </b-card>
                     </template>
                 </b-carousel-slide>
             </b-carousel>
-            <!-- <b-button v-b-modal.modal-scrollable>Launch scrolling modal</b-button>
-
             <b-modal id="modal-scrollable" scrollable title="Scrollable Content">
-                <p class="my-4" v-for="i in 20" :key="i">
-                Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-                in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                </p>
-            </b-modal> -->
-            <!-- <b-button @click="runTests">hello</b-button> -->
+                <div v-if= selectedTest>
+                    <h2>{{ selectedTest.name }}</h2>
+                    <p>{{ selectedTest.test }}</p>
+                    </div>
+            </b-modal>
         </div>
         <div id="peaControlsDiv" :class="{'expanded-PEA-controls': isExpandedPEA}">           
             <b-tabs v-model="peaDisplayTabIndex" no-key-nav>
@@ -81,7 +80,7 @@ import i18n from "@/i18n";
 import { PythonExecRunningState } from "@/types/types";
 import Menu from "@/components/Menu.vue";
 import Tutorials from "@/store/initial-tut-states";
-import { TestObjects, TutorialObject } from "@/types/tutorial-types";
+import { TestObject, TestObjects, TutorialObject } from "@/types/tutorial-types";
 
 export default Vue.extend({
     name: "PythonExecutionArea",
@@ -98,6 +97,7 @@ export default Vue.extend({
             isTurtleListeningTimerEvents: false, // flag to indicate whether an execution of Turtle resulted in listen for timer events on Turtle
             stopTurtleUIEventListeners: undefined as ((keepShowingTurtleUI: boolean)=>void) | undefined, // registered callback method to clear the Turtle listeners mentioned above
             currentSlide: 0, // Stores the current slide index
+            selectedTest: null as TestObject | null,
         };
     },
 
@@ -287,7 +287,7 @@ export default Vue.extend({
             }
         },
         
-        execPythonCode(additional_code = "") {
+        execPythonCode(test: TestObject | null = null) {
             const pythonConsole = this.$refs.pythonConsole as HTMLTextAreaElement;
             pythonConsole.value = "";
             setPythonExecAreaExpandButtonPos();
@@ -314,9 +314,15 @@ export default Vue.extend({
                 const parser = new Parser();
                 let userCode = parser.getFullCode();
                 parser.getErrorsFormatted(userCode);
-                userCode += additional_code;
+                if(test){
+                    userCode = ("print(\"Expected output:\")\n" + test.test + "\nprint(\"Actual output: \")\n") + userCode;
+                }
                 // Trigger the actual Python code execution launch
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
+                    // We need to check if it has passed the tests, if available
+                    if(test){
+                        test.complete = pythonConsole.value.includes(test.expectedOutput);
+                    }
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
                     this.isTurtleListeningKeyEvents = !!isTurtleListeningKeyEvents; 
                     this.isTurtleListeningMouseEvents = !!isTurtleListeningMouseEvents; 
@@ -488,7 +494,7 @@ export default Vue.extend({
             }
         },
 
-        runTests() {
+        runTests(test: TestObject) {
             // The Python code execution has a 3-ways states:
             // - not running when nothing happens, click will trigger "running"
             // - running when some code is running, click will trigger "running awaiting stop"
@@ -496,7 +502,7 @@ export default Vue.extend({
             switch (useStore().pythonExecRunningState) {
             case PythonExecRunningState.NotRunning:
                 useStore().pythonExecRunningState = PythonExecRunningState.Running;
-                this.execPythonCode("print(\"additional code\")");
+                this.execPythonCode(test);
                 return;
             case PythonExecRunningState.Running:
                 // There are 2 possible scenarios, which depends on the user code:
@@ -532,6 +538,10 @@ export default Vue.extend({
             if (savedIndex !== null) {
                 this.currentSlide = parseInt(savedIndex, 10);
             }
+        },
+
+        openModal(test: TestObject){
+            this.selectedTest = test;
         },
     },
 
