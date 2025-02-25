@@ -15,6 +15,7 @@ export interface TestObject{
     expectedOutput: string[];
     test: string[];
     complete: boolean;
+    hint: string;
 }
 
 export interface TutorialObjects {

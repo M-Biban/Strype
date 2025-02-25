@@ -7,6 +7,7 @@ const Tut1Tests: TestObjects = {
         expectedOutput: ["test 1.1", "test 1.12"],
         test: ["\"test 1.1\"", "\"test 1.12\""],
         complete: false,
+        hint: "hint",
     },
 
     2 : {
@@ -15,6 +16,7 @@ const Tut1Tests: TestObjects = {
         expectedOutput: ["test 1.2", "test 1.21"],
         test: ["\"test 1.2\"", "\"test 1.21\""],
         complete: false,
+        hint: "hint",
     },
 };
 

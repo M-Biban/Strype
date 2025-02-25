@@ -15,18 +15,22 @@
                             <div style="margin-left: 32px; width: 86%">
                             <b-card-title>{{ test.name }}</b-card-title>
                             <b-card-subtitle>{{ test.description }}</b-card-subtitle>
-                            <b-card-text>kjdukfgka af fuahfigahkg giaiufgigad g gahdfg gaidgf h</b-card-text>
-                            <b-button v-b-modal.modal-scrollable @click="openModal(test)">Launch scrolling modal</b-button>
+                            <div>
+                            <b-button v-b-modal.modal-scrollable @click="openModal(test)">Need a hint?</b-button>
+                            <b-button v-if="test.complete" @click="runTests(test)" style="background-color: #04AA6D;">run</b-button>
+                            <b-button v-else @click="runTests(test)" style="background-color: #008CBA;">run</b-button>
                             <b-button @click="runTests(test)">hello</b-button>
+                            </div>
                             </div>
                         </b-card>
                     </template>
                 </b-carousel-slide>
             </b-carousel>
-            <b-modal id="modal-scrollable" scrollable title="Scrollable Content">
+            <b-modal id="modal-scrollable" scrollable title="Need a hint?">
                 <div v-if= selectedTest>
                     <h2>{{ selectedTest.name }}</h2>
-                    <p>{{ selectedTest.test }}</p>
+                    <h3>{{ selectedTest.description }}</h3>
+                    <p>{{ selectedTest .hint }}</p>
                     </div>
             </b-modal>
         </div>
