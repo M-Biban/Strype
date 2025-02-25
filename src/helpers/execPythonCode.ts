@@ -191,6 +191,7 @@ export function execPythonCode(aConsoleTextArea: HTMLTextAreaElement, aTurtleDiv
         return;
     },
     (err: any) => {
+        console.log("err: "+ err);
         // We can use the mechanism in place in the Parser for the TigerPython errors mapping to find 
         // what line of code maps with what frame in case of an execution error.
         // We need to extract the line from the error message sent by Skulpt.
@@ -235,7 +236,7 @@ export function execPythonCode(aConsoleTextArea: HTMLTextAreaElement, aTurtleDiv
         }
             
         
-        let frameId = -1;        
+        let frameId = -1;       
         if (errorLine > 0) { 
             // Skulpt starts indexing at 1, we use 0 for TigerPython, so we need to offset the line number
             const locatableError = lineFrameMapping[errorLine - 1] !== undefined;

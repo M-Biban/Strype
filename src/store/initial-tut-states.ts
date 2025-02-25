@@ -4,6 +4,7 @@ import Tut1Tests from "./tut-tests/tut-1-tests";
 import initialTut2State from "./initial-states/initial-tut-2";
 import Tut2Tests from "./tut-tests/tut-2-tests";
 import initialPrimeState from "./initial-states/initial-prime-state";
+import PrimeTutTests from "./tut-tests/prime-tut-tests";
 
 const Tutorials : TutorialObjects = {
     "/tut1" : {
@@ -29,8 +30,8 @@ const Tutorials : TutorialObjects = {
         difficulty: 1,
         url: "/tutPrimes",
         initialState: initialPrimeState,
-        tests: Tut2Tests,
-        nextAvailableId: 2,
+        tests: PrimeTutTests,
+        nextAvailableId: 3,
     },
 };
 

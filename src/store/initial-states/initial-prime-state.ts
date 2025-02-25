@@ -64,13 +64,27 @@ const initialPrimeState: EditorFrameObjects = {
         isSelected: false,
         isVisible: true,
         parentId: -2,
-        childrenIds: [],
+        childrenIds: [2],
         jointParentId: 0,
         jointFrameIds: [],
         labelSlotsDict: {
             0: {slotStructures: {operators: [], fields: [{code: "isPrime"}]}},
             1: {slotStructures: {operators: [], fields: [{code: "num"}]}},
         },
+        caretVisibility: CaretPosition.none,
+    },
+
+    2: {
+        frameType: getFrameDefType(AllFrameTypesIdentifier.comment),
+        id: 2,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 1,
+        childrenIds: [],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {0: {slotStructures: {operators: [], fields: [{code: "Write your code here:"}]}}},
         caretVisibility: CaretPosition.none,
     },
 

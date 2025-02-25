@@ -315,13 +315,32 @@ export default Vue.extend({
                 let userCode = parser.getFullCode();
                 parser.getErrorsFormatted(userCode);
                 if(test){
-                    userCode = ("print(\"Expected output:\")\n" + test.test + "\nprint(\"Actual output: \")\n") + userCode;
+                    let functionCalls = test.test.map((call) => ("print(" + call + ")")).join("\n");
+                    // let expectedOutput = test.expectedOutput.join("\n");
+                    let expectedOutput = test.expectedOutput.map((out) => ("print(\"" + out + "\")")).join("\n");
+
+                    // userCode = "print(\"Console Output: \")\n"+ userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
+                    userCode = userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
                 }
+
                 // Trigger the actual Python code execution launch
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
                     // We need to check if it has passed the tests, if available
                     if(test){
-                        test.complete = pythonConsole.value.includes(test.expectedOutput);
+                        const endResult = pythonConsole.value.split("Actual output: \n")[1].trim().split("\n");
+                        test.complete = test.expectedOutput.every((output) => pythonConsole.value.includes(output));
+                        for(let i = 0; i < test.test.length; i++) { 
+                            console.log(test.expectedOutput[i]); 
+                            console.log(endResult[i]);
+                            if(test.expectedOutput[i] === endResult[i]){
+                                test.complete = true;
+                            }
+                            else{
+                                test.complete = false;
+                                break;
+                            }
+                        }
+                        console.log(test.complete);
                     }
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
                     this.isTurtleListeningKeyEvents = !!isTurtleListeningKeyEvents; 

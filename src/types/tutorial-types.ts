@@ -12,8 +12,8 @@ export interface TutorialObject{
 export interface TestObject{
     name: string;
     description: string;
-    expectedOutput: string;
-    test: string;
+    expectedOutput: string[];
+    test: string[];
     complete: boolean;
 }
 
