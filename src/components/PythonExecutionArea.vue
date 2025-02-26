@@ -16,10 +16,9 @@
                             <b-card-title>{{ test.name }}</b-card-title>
                             <b-card-subtitle>{{ test.description }}</b-card-subtitle>
                             <div>
-                            <b-button v-b-modal.modal-scrollable @click="openModal(test)">Need a hint?</b-button>
-                            <b-button v-if="test.complete" @click="runTests(test)" style="background-color: #04AA6D;">run</b-button>
-                            <b-button v-else @click="runTests(test)" style="background-color: #008CBA;">run</b-button>
-                            <b-button @click="runTests(test)">hello</b-button>
+                                <b-button v-b-modal.modal-scrollable @click="openModal(test)">Need a hint?</b-button>
+                                <b-button v-if="test.complete" @click="runTests(test)" style="background-color: green;">run</b-button>
+                                <b-button v-else @click="runTests(test)" style="background-color: red;">run</b-button>
                             </div>
                             </div>
                         </b-card>
@@ -320,10 +319,8 @@ export default Vue.extend({
                 parser.getErrorsFormatted(userCode);
                 if(test){
                     let functionCalls = test.test.map((call) => ("print(" + call + ")")).join("\n");
-                    // let expectedOutput = test.expectedOutput.join("\n");
                     let expectedOutput = test.expectedOutput.map((out) => ("print(\"" + out + "\")")).join("\n");
 
-                    // userCode = "print(\"Console Output: \")\n"+ userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
                     userCode = userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
                 }
 
@@ -331,12 +328,11 @@ export default Vue.extend({
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
                     // We need to check if it has passed the tests, if available
                     if(test){
-                        const endResult = pythonConsole.value.split("Actual output: \n")[1].trim().split("\n");
-                        test.complete = test.expectedOutput.every((output) => pythonConsole.value.includes(output));
-                        for(let i = 0; i < test.test.length; i++) { 
-                            console.log(test.expectedOutput[i]); 
-                            console.log(endResult[i]);
-                            if(test.expectedOutput[i] === endResult[i]){
+                        const split = pythonConsole.value.split("Actual output: \n");
+                        const endResult = split[1].trim().split("\n");
+                        const expected = split[0].trim().split("Expected output: \n")[1].trim().split("\n");
+                        for(let i = 0; i < test.test.length; i++) {
+                            if(expected[i] === endResult[i]){
                                 test.complete = true;
                             }
                             else{
@@ -344,7 +340,6 @@ export default Vue.extend({
                                 break;
                             }
                         }
-                        console.log(test.complete);
                     }
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
                     this.isTurtleListeningKeyEvents = !!isTurtleListeningKeyEvents; 

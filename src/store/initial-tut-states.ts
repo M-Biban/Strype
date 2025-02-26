@@ -5,6 +5,8 @@ import initialTut2State from "./initial-states/initial-tut-2";
 import Tut2Tests from "./tut-tests/tut-2-tests";
 import initialPrimeState from "./initial-states/initial-prime-state";
 import PrimeTutTests from "./tut-tests/prime-tut-tests";
+import initialFizzState from "./initial-states/initial-fizz-state";
+import FizzTutTests from "./tut-tests/fizz-tut-tests";
 
 const Tutorials : TutorialObjects = {
     "/tut1" : {
@@ -14,6 +16,7 @@ const Tutorials : TutorialObjects = {
         initialState: initialTut1State,
         tests: Tut1Tests,
         nextAvailableId: 3,
+        description: "A simple first tutorial.",
     },
 
     "/tut2" : {
@@ -23,6 +26,7 @@ const Tutorials : TutorialObjects = {
         initialState: initialTut2State,
         tests: Tut2Tests,
         nextAvailableId: 3,
+        description: "A second tutorial to get to grips with Strype.",
     },
 
     "/tutPrimes" : {
@@ -32,6 +36,17 @@ const Tutorials : TutorialObjects = {
         initialState: initialPrimeState,
         tests: PrimeTutTests,
         nextAvailableId: 3,
+        description: "Learn how to use for loops to create a function that finds out if your number is prime or not.",
+    },
+
+    "/tutFizz" : {
+        name: "FizzBuzz",
+        difficulty: 1,
+        url: "/tutFizz",
+        initialState: initialFizzState,
+        tests: FizzTutTests,
+        nextAvailableId: 6,
+        description: "Print numbers and but replace multiples of 3, 5 or both with Fizz, Buzz and FizzBuzz respectively.",
     },
 };
 

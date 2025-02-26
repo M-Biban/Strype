@@ -7,12 +7,13 @@ export interface TutorialObject{
     initialState: EditorFrameObjects;
     tests: TestObjects,
     nextAvailableId: number,
+    description: string;
 }
 
 export interface TestObject{
     name: string;
     description: string;
-    expectedOutput: string[];
+    expectedOutput: any[];
     test: string[];
     complete: boolean;
     hint: string;
