@@ -9,7 +9,7 @@
                 v-model="currentSlide"
                 @sliding-end = "saveSlideIndex"
             >
-                <b-carousel-slide v-for="test in getTests" :key="test">
+                <b-carousel-slide v-for="test in Object.values(tests)" :key="test">
                     <template #img>
                         <b-card>
                             <div style="margin-left: 32px; width: 86%">
@@ -85,6 +85,7 @@ import Menu from "@/components/Menu.vue";
 import Tutorials from "@/store/initial-tut-states";
 import { TestObject, TestObjects, TutorialObject } from "@/types/tutorial-types";
 
+
 export default Vue.extend({
     name: "PythonExecutionArea",
 
@@ -101,10 +102,11 @@ export default Vue.extend({
             stopTurtleUIEventListeners: undefined as ((keepShowingTurtleUI: boolean)=>void) | undefined, // registered callback method to clear the Turtle listeners mentioned above
             currentSlide: 0, // Stores the current slide index
             selectedTest: null as TestObject | null,
+            tests: {} as TestObjects,
         };
     },
 
-    mounted(){
+    async mounted(){
         // Just to prevent any inconsistency with a uncompatible state, set a state value here and we'll know we won't get in some error
         useStore().pythonExecRunningState = PythonExecRunningState.NotRunning;
         
@@ -184,6 +186,8 @@ export default Vue.extend({
             });
         }
         this.loadSavedSlide();
+
+        this.tests = await this.getTests();
     },
 
     computed:{
@@ -219,17 +223,11 @@ export default Vue.extend({
             return this.isTurtleListeningKeyEvents || this.isTurtleListeningMouseEvents || this.isTurtleListeningTimerEvents;
         },
 
+
         isTutorialPage1(): boolean {
             return this.$route.path.startsWith("/tut");
         },
 
-        getTutorial(): TutorialObject {
-            return Tutorials[this.$route.path];
-        },
-
-        getTests() : TestObjects{
-            return (this.getTutorial as TutorialObject).tests;
-        },
     },
 
     watch: {
@@ -560,6 +558,27 @@ export default Vue.extend({
 
         openModal(test: TestObject){
             this.selectedTest = test;
+        },
+
+        async createTutorial(): Promise<TutorialObject>{
+            return await useStore().createNewTutorial(this.$route.query.file as string) as unknown as TutorialObject;
+        },
+
+        async getTutorial(): Promise<TutorialObject> {
+            let tut = Tutorials[this.$route.path];
+            if(tut === undefined){
+                tut = Tutorials[this.$route.query.file as string];
+                if(tut === undefined){
+                    tut = await this.createTutorial();
+                    console.log(tut);
+                }
+            }
+            return tut;
+        },
+
+        async getTests() : Promise<TestObjects>{
+            const tut = await this.getTutorial();
+            return tut.tests;
         },
     },
 

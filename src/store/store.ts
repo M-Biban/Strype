@@ -16,7 +16,8 @@ import { BvModalEvent } from "bootstrap-vue";
 import { nextTick } from "@vue/composition-api";
 import { TPyParser } from "tigerpython-parser";
 import Tutorials from "./initial-tut-states";
-import { TutorialObject } from "@/types/tutorial-types";
+import { TestObject, TestObjects, TutorialObject } from "@/types/tutorial-types";
+import axios from "axios";
 
 let initialState: StateAppObject = initialStates["initialPythonState"];
 /* IFTRUE_isMicrobit */
@@ -2830,5 +2831,104 @@ export const useStore = defineStore("app", {
             this.preCompileErrors = [];
             this.errorCount = 0;
         },
+
+        async createNewTutorial(filePath: string): Promise<TutorialObject>{
+            const response = await axios.get(filePath);
+            const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
+            return tut;
+        },
+
+        // createTutorial(code: string){
+        //     const sections = splitLinesToSections(code.split("\n"));
+        //     copyFramesFromParsedPython(sections.main.join("\n"), STRYPE_LOCATION.MAIN_CODE_SECTION, sections.mainMapping);
+        // getCaretContainerComponent(getFrameComponent(-3) as InstanceType<typeof FrameContainer>).doPaste(true); add this somewhere in vue i think
+        // },
+
+        parseTutorial(file: string, path: string): TutorialObject{
+            const lines = file.split("testsStart");
+            const tut: Partial<TutorialObject> = {};
+
+            (lines[0].split("\n") as string[]).forEach((line) => {
+                const [key, value] = line.split("=");
+
+                if (!key||!value){
+                    return;
+                }
+
+                const trimmedKey = key.trim();
+                const trimmedValue = value.trim();
+
+                switch(trimmedKey){
+                case "name":
+                    tut.name = trimmedValue;
+                    break;
+                case "difficulty":
+                    tut.difficulty = parseInt(trimmedValue);
+                    break;
+                case "description":
+                    tut.description = trimmedValue;
+                    break;
+                case "initialState":
+                    tut.initialState = JSON.parse(trimmedValue);
+                    break;
+                case "nextAvailableId":
+                    tut.nextAvailableId = parseInt(trimmedValue);
+                    break;
+                }
+                tut.url = path; // add update to tut.tests here
+            });
+
+            tut.tests = this.parseTests(lines[1]);
+            Tutorials[path] = tut as TutorialObject;
+            return tut as TutorialObject;
+        },
+
+        parseTests(tests: string): TestObjects{
+            let counter = 0;
+            let currentTest : Partial<TestObject> = {};
+            const currentTests: Partial<TestObjects> = {};
+
+            (tests.trim().split("\n") as string[]).forEach((line) => {
+
+                const [key, value] = line.split("=");
+
+                if(!key||!value){
+                    return;
+                }
+
+                const trimmedKey = key.trim();
+                const trimmedValue = value.trim();
+
+                switch(trimmedKey){
+                case "name":
+                    if (currentTest.name){
+                        counter += 1;
+                        currentTest.complete = false;
+                        currentTests[counter] = currentTest as TestObject;
+                        currentTest = {};
+                    }
+                    currentTest.name = trimmedValue;
+                    break;
+                case "description":
+                    currentTest.description = trimmedValue;
+                    break;
+                case "hint":
+                    currentTest.hint = trimmedValue;
+                    break;
+                case "expectedOutput":
+                    currentTest.expectedOutput = JSON.parse(trimmedValue);
+                    break;
+                case "test":
+                    currentTest.test = JSON.parse(trimmedValue);
+                    break;
+                }
+                if(currentTest.name){
+                    currentTests[counter + 1] = currentTest as TestObject;
+                }
+            });
+
+            return currentTests as TestObjects;
+        },
+
     },
 });
