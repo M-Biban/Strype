@@ -326,18 +326,24 @@ export default Vue.extend({
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
                     // We need to check if it has passed the tests, if available
                     if(test){
+                        let count = 0;
+                        const failed = [];
                         const split = pythonConsole.value.split("Actual output: \n");
                         const endResult = split[1].trim().split("\n");
                         const expected = split[0].trim().split("Expected output: \n")[1].trim().split("\n");
                         for(let i = 0; i < test.test.length; i++) {
                             if(expected[i] === endResult[i]){
+                                count = count + 1;
                                 test.complete = true;
                             }
                             else{
+                                failed.push(test.test[i]);
                                 test.complete = false;
-                                break;
                             }
                         }
+
+                        userCode = ""+count+"/"+test.test.length+ " tests passed!\n"+"failed tests:\n"+failed.join("\n");
+                        pythonConsole.value = userCode;
                     }
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
                     this.isTurtleListeningKeyEvents = !!isTurtleListeningKeyEvents; 
