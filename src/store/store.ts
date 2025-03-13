@@ -169,6 +169,8 @@ export const useStore = defineStore("app", {
             DAPWrapper: {} as DAPWrapper,
 
             previousDAPWrapper: {} as DAPWrapper,
+
+            tutorialInitialCode: "",
         };
     },
 
@@ -2816,12 +2818,17 @@ export const useStore = defineStore("app", {
             } while (previousFramesSelection.length !== this.selectedFrames.length && !this.selectedFrames.includes(stopId));
         },
 
-        initialiseTutorialState(path: string) {
+        initialiseTutorialState(path: string, isSharedUrl: boolean) {
             const is: TutorialObject = Tutorials[path];
-            this.frameObjects = cloneDeep(is.initialState);
+            if(!isSharedUrl){
+                this.frameObjects = cloneDeep(is.initialState);
+                this.nextAvailableId = is.nextAvailableId; 
+            } 
+            else{
+                this.nextAvailableId = Object.keys(this.frameObjects).length - 3;
+            }
             this.debugging = false;
             this.showKeystroke = false;
-            this.nextAvailableId = is.nextAvailableId;
 
             this.currentFrame = { id: -3, caretPosition: CaretPosition.body};
             this.selectedFrames = [];
@@ -2837,12 +2844,6 @@ export const useStore = defineStore("app", {
             const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
             return tut;
         },
-
-        // createTutorial(code: string){
-        //     const sections = splitLinesToSections(code.split("\n"));
-        //     copyFramesFromParsedPython(sections.main.join("\n"), STRYPE_LOCATION.MAIN_CODE_SECTION, sections.mainMapping);
-        // getCaretContainerComponent(getFrameComponent(-3) as InstanceType<typeof FrameContainer>).doPaste(true); add this somewhere in vue i think
-        // },
 
         parseTutorial(file: string, path: string): TutorialObject{
             const lines = file.split("testsStart");
@@ -2868,17 +2869,12 @@ export const useStore = defineStore("app", {
                 case "description":
                     tut.description = trimmedValue;
                     break;
-                case "initialState":
-                    tut.initialState = JSON.parse(trimmedValue);
-                    break;
-                case "nextAvailableId":
-                    tut.nextAvailableId = parseInt(trimmedValue);
-                    break;
                 }
                 tut.url = path; // add update to tut.tests here
             });
-
-            tut.tests = this.parseTests(lines[1]);
+            const otherLines = lines[1].split("initialStateStart");
+            this.tutorialInitialCode = otherLines[1];
+            tut.tests = this.parseTests(otherLines[0]);
             Tutorials[path] = tut as TutorialObject;
             return tut as TutorialObject;
         },

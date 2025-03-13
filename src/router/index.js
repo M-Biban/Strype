@@ -22,5 +22,10 @@ export default new Router({
             name: "TutorialPage",
             component: TutorialPage, // This will point to the component you want to show for this route
         },
+        {
+            path: "/tut",
+            name: "URLTutorialPage",
+            component: TutPage1,
+        },
     ],
 });

@@ -17,6 +17,23 @@
                 </b-card>
             </router-link>
         </div>
+        <button @click="showModal = true">
+            External tutorial
+        </button>
+        <b-modal v-model="showModal" title="External" @ok="submitForm">
+            <p>Load the link below</p>
+            <b-form @submit.prevent="submitForm">
+                <b-form-group label="Tutorial Link" label-for="tutorial-link">
+                    <b-form-input id="tutorial-link" v-model="link" required placeholder="Enter the link"></b-form-input>
+                </b-form-group>
+            </b-form>
+            <template #footer>
+                <b-button variant="secondary" @click="showModal = false">Cancel</b-button>
+                <router-link :to="{ name: 'URLTutorialPage' }">
+                    <b-button variant="primary">Proceed</b-button>
+                </router-link>
+            </template>
+        </b-modal>
     </div>
 </div>
 </template>
@@ -25,15 +42,28 @@
 import Tutorials from "@/store/initial-tut-states";
 
 
-export default {
+import Vue from "vue";
+
+export default Vue.extend({
     name: "TutorialPage",
 
-    data(): { Tutorials: typeof Tutorials } {
+    data(): { Tutorials: typeof Tutorials; showModal: boolean; link: string}{
         return {
             Tutorials,
+            showModal: false,
+            link: "",
         };
     },
-};
+
+    methods: {
+        submitForm(): void {
+            this.$router.push({
+                name: "URLTutorialPage",
+                query: {file: this.link},
+            });
+        },
+    },
+});
 </script>
   
   <style scoped>

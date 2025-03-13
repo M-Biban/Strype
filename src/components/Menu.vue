@@ -2,9 +2,6 @@
     <!-- keep the tabindex attribute, it is necessary to handle focus properly -->
     <div @keydown="handleKeyEvent" @keyup="handleKeyEvent" tabindex="-1" @mousedown.self.stop.prevent>
         <GoogleDrive :ref="googleDriveComponentId" />
-        <router-link :to="{ name: 'TutorialPage' }" :title="$i18n.t('appMenu.tutorial')">
-            <img class="top-left-strype-logo" :src="require('@/assets/images/Strype-logo-128-2x.png')" />
-        </router-link>
         <div>
             <a href="https://strype.org/" :title="$i18n.t('appMenu.homepage')"><img class="top-left-strype-logo" :src="require('@/assets/images/Strype-logo-128-2x.png')"></a>
         </div>
@@ -34,6 +31,10 @@
             </ModalDlg>
             <a :id="saveProjectLinkId" v-show="showMenu" class="strype-menu-link strype-menu-item" @click="handleSaveMenuClick">{{$t('appMenu.saveProject')}}<span class="strype-menu-kb-shortcut">{{saveProjectKBShortcut}}</span></a>
             <a v-if="showMenu" :class="{'strype-menu-link strype-menu-item': true, disabled: !isSynced }" v-b-modal.save-strype-project-modal-dlg v-t="'appMenu.saveAsProject'"/>
+            <div class="menu-separator-div"></div>
+            <a v-if="showMenu" class="strype-menu-link strype-menu-item">
+                <router-link :to="{name: 'TutorialPage'}">Tutorials</router-link>
+            </a>
             <ModalDlg :dlgId="saveProjectModalDlgId" :autoFocusButton="'ok'">
                 <label v-t="'appMessage.fileName'" class="load-save-label"/>
                 <input :id="saveFileNameInputId" :placeholder="$t('defaultProjName')" type="text" ref="toFocus" autocomplete="off"/>
@@ -57,7 +58,6 @@
                     <br/>
                 </div>
             </ModalDlg>
-            <div class="menu-separator-div"></div>
             <!-- reset section -->
             <a v-if="showMenu" class="strype-menu-link strype-menu-item" @click="resetProject();showMenu=false;" v-t="'appMenu.resetProject'" :title="$t('appMenu.resetProjectTooltip')"/>
             <div class="menu-separator-div"></div>
@@ -222,6 +222,11 @@ export default Vue.extend({
                 });
             }
         });
+
+        if(this.isUrlTutorial){
+            this.loadProject();
+        }
+
     },
 
     beforeDestroy(){
@@ -385,6 +390,13 @@ export default Vue.extend({
                     accept: { "text/x-python": [".py"] },
                 },
             ];
+        },
+
+        isUrlTutorial(): boolean{
+            if(this.$route.fullPath.includes("?file=")){
+                return true;
+            }
+            return false;
         },
     },
 
@@ -622,7 +634,26 @@ export default Vue.extend({
             const selectValue = this.getTargetSelectVal();
             // Reset the temporary sync file flag
             this.tempSyncTarget = this.appStore.syncTarget;
-            if(selectValue == StrypeSyncTarget.gd){
+            if(this.isUrlTutorial){
+                const emitPayload: AppEvent = {requestAttention: true};
+                emitPayload.message = this.$i18n.t("appMessage.editorFileUpload").toString();
+                this.$emit("app-showprogress", emitPayload);
+                console.log("tut: " + useStore().tutorialInitialCode);
+                // Directly pass the Python code string
+                if (useStore().tutorialInitialCode.trimStart().startsWith("{")) {
+                    this.appStore.setStateFromJSONStr({
+                        stateJSONStr: useStore().tutorialInitialCode,
+                    }).then(() => this.onFileLoaded("direct_input.py", new Date().getTime(), undefined));
+                } 
+                else {
+                    (this.$root.$children[0] as InstanceType<typeof App>)
+                        .setStateFromPythonFile(useStore().tutorialInitialCode, "direct_input.py", new Date().getTime(), undefined);
+                }
+
+                emitPayload.requestAttention=false;
+                this.$emit("app-showprogress", emitPayload); 
+            }
+            else if(selectValue == StrypeSyncTarget.gd){
                 (this.$refs[this.googleDriveComponentId] as InstanceType<typeof GoogleDrive>).loadFile();
             }
             else{               
