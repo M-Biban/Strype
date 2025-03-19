@@ -13,23 +13,29 @@
                     <template #img>
                         <b-card>
                             <div style="margin-left: 32px; width: 86%">
-                            <b-card-title>{{ test.name }}</b-card-title>
-                            <b-card-subtitle>{{ test.description }}</b-card-subtitle>
-                            <div>
-                                <b-button v-b-modal.modal-scrollable @click="openModal(test)">Need a hint?</b-button>
-                                <b-button v-if="test.complete" @click="runTests(test)" style="background-color: green;">run</b-button>
-                                <b-button v-else @click="runTests(test)" style="background-color: red;">run</b-button>
+                            <div class="row" style="width: 100%; margin-left: 0.05em;">
+                                <b-card-title>{{ test.name }}</b-card-title>
+                                <div class="flex-padding"></div>
+                                <div class="button-row">
+                                    <b-button v-b-modal.modal-scrollable @click="openModal(test)" class="hint-button"><i class="bi bi-question"></i></b-button>
+                                    <div class="flex-padding"></div>
+                                    <b-button @click="runTests(test)" class="hint-button"><i class="bi bi-play"></i></b-button>
+                                </div>
                             </div>
+                            <b-card-subtitle>{{ test.description }}</b-card-subtitle>
+                            <!-- <div>
+                                <b-button @click="runTests(test)">run</b-button>
+                            </div> -->
                             </div>
                         </b-card>
                     </template>
                 </b-carousel-slide>
             </b-carousel>
-            <b-modal id="modal-scrollable" scrollable title="Need a hint?">
-                <div v-if= selectedTest>
-                    <h2>{{ selectedTest.name }}</h2>
-                    <h3>{{ selectedTest.description }}</h3>
-                    <p>{{ selectedTest .hint }}</p>
+            <b-modal id="modal-scrollable" scrollable title="Need a hint?" content-class="my-modal-class" header-class="modal-header" hide-footer>
+                <div v-if= selectedTest class="modal-body">
+                    <h1 class="modal-title">{{ selectedTest.name }}</h1>
+                    <strong>{{ selectedTest.description }}</strong>
+                    <div>{{ selectedTest .hint }}</div>
                     </div>
             </b-modal>
         </div>
@@ -320,6 +326,8 @@ export default Vue.extend({
                     let expectedOutput = test.expectedOutput.map((out) => ("print(\"" + out + "\")")).join("\n");
 
                     userCode = userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
+
+                    console.log(userCode);
                 }
 
                 // Trigger the actual Python code execution launch
@@ -328,21 +336,27 @@ export default Vue.extend({
                     if(test){
                         let count = 0;
                         const failed = [];
+                        console.log(pythonConsole.value);
                         const split = pythonConsole.value.split("Actual output: \n");
                         const endResult = split[1].trim().split("\n");
                         const expected = split[0].trim().split("Expected output: \n")[1].trim().split("\n");
+                        const userOutput = split[0].trim().split("Expected output: \n")[0];
                         for(let i = 0; i < test.test.length; i++) {
                             if(expected[i] === endResult[i]){
                                 count = count + 1;
-                                test.complete = true;
                             }
                             else{
                                 failed.push(test.test[i]);
-                                test.complete = false;
                             }
                         }
-
-                        userCode = ""+count+"/"+test.test.length+ " tests passed!\n"+"failed tests:\n"+failed.join("\n");
+                        if (failed.length > 0){
+                            this.$set(test, "completed", false);
+                            userCode = userOutput +""+count+"/"+test.test.length+ " tests passed!\n"+"failed tests:\n"+failed.join("\n");
+                        }
+                        else{
+                            this.$set(test, "completed", true);
+                            userCode = userOutput +""+count+"/"+test.test.length+ " tests passed!\n";
+                        }
                         pythonConsole.value = userCode;
                     }
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
@@ -743,9 +757,84 @@ export default Vue.extend({
         left: 10px;
     }
 
-    .carousel .carousel-control-prev-icon { background-color: rgb(142, 196, 158);}
-    .carousel .carousel-control-next-icon { background-color: rgb(142, 196, 158);}
+    .carousel .carousel-control-prev-icon { 
+        background-color: rgb(142, 196, 158);
+    }
+    .carousel .carousel-control-next-icon { 
+        background-color: rgb(142, 196, 158);
+    }
 
     .carousel .carousel-indicators li { background-color: gray; }
     .carousel .carousel-indicators li.active { background-color: rgb(142, 196, 158); }
+
+</style>
+
+<style lang="css" scoped>
+    .hint-button {
+        width: 2em;
+        height: 2em;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(107, 134, 120);
+        border-radius: 50%;
+        cursor: pointer;
+        transition-duration: .3s;
+        border: none;
+        opacity: 70%;
+        z-index: 10;
+    }
+
+    .hint-button:hover {
+        opacity: 100%;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    /deep/ .my-modal-class{
+        background-color: #ffffff;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        padding: 24px;
+        overflow: hidden;
+    }
+
+    .modal-body {
+        text-align: center;
+    }
+    
+    .modal-title {
+        color: #708371;
+        margin-bottom: 12px;
+        font-weight: bold;
+    }
+
+    /deep/ .modal-header {
+        background-color: #708371;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.5rem;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        padding: 16px;
+    }
+
+    /deep/ .modal-footer {
+        background-color: #f0f4f8;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 24px;
+    }
+
+
 </style>

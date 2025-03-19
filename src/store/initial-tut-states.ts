@@ -7,6 +7,8 @@ import initialPrimeState from "./initial-states/initial-prime-state";
 import PrimeTutTests from "./tut-tests/prime-tut-tests";
 import initialFizzState from "./initial-states/initial-fizz-state";
 import FizzTutTests from "./tut-tests/fizz-tut-tests";
+import initialMorseCodeState from "./initial-states/initial-morse-code-state";
+import MorseCodeTests from "./tut-tests/morse-code-tests";
 
 const Tutorials : TutorialObjects = {
     "/tut1" : {
@@ -47,6 +49,16 @@ const Tutorials : TutorialObjects = {
         tests: FizzTutTests,
         nextAvailableId: 6,
         description: "Print numbers and but replace multiples of 3, 5 or both with Fizz, Buzz and FizzBuzz respectively.",
+    },
+
+    "/tutMorseCode" : {
+        name:"MorseCode",
+        difficulty: 2,
+        url: "/tutMorseCode",
+        initialState: initialMorseCodeState,
+        tests: MorseCodeTests,
+        nextAvailableId: 5,
+        description: "Create a 2 player Tic-Tac-Toe game with win detection",
     },
 };
 

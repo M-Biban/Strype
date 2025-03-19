@@ -1,0 +1,78 @@
+import {CaretPosition, EditorFrameObjects, RootContainerFrameDefinition, ImportsContainerDefinition, FuncDefContainerDefinition, MainFramesContainerDefinition, getFrameDefType, AllFrameTypesIdentifier} from "@/types/types";
+
+const initialMorseCodeState: EditorFrameObjects = {
+    0: {
+        id: 0,
+        frameType : RootContainerFrameDefinition,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 0,
+        childrenIds: [-1, -2, -3],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: { },
+        caretVisibility: CaretPosition.none,
+    },
+    "-1": {
+        id: -1,
+        frameType : ImportsContainerDefinition,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 0,
+        childrenIds: [],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {},
+        isCollapsed: false,
+        caretVisibility: CaretPosition.none,
+    },
+    "-2": {
+        id: -2,
+        frameType : FuncDefContainerDefinition,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 0,
+        childrenIds: [],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: { },
+        isCollapsed: false,
+        caretVisibility: CaretPosition.none,
+    },
+    "-3": {
+        id: -3,
+        frameType : MainFramesContainerDefinition,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 0,
+        childrenIds: [1],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {},
+        isCollapsed: false,
+        caretVisibility: CaretPosition.body,
+    },
+
+    1: {
+        frameType: getFrameDefType(AllFrameTypesIdentifier.varassign),
+        id: 1,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: -3,
+        childrenIds: [],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {
+            0: {slotStructures: {operators: [], fields: [{code: "morseCodeDict"}]}},
+            1: {slotStructures: {operators: [], fields: [{code: "{\"A\" : \"a\", \"B\" : \"b\", \"C\" : \"c\", \"D\" : \"d\", \"E\" : \"e\", \"F\" : \"f\", \"G\" : \"g\", \"H\": \"h\", \"I\" : \"i\", \"J\" : \"j\", \"K\" : \"k\", \"L\" : \"l\", \"M\" : \"m\", \"N\" : \"n\", \"O\" : \"o\", \"P\" : \"p\", \"Q\" : \"q\", \"R\" : \"r\", \"S\" : \"s\", \"T\" : \"t\", \"U\" : \"u\", \"V\" : \"v\", \"W\" : \"w\", \"X\" : \"x\", \"Y\" : \"y\", \"Z\" : \"z\", \"1\" : \"1\", \"2\" : \"2\", \"3\" : \"3\", \"4\" : \"4\", \"5\" : \"5\", \"6\" : \"6\", \"7\" : \"7\", \"8\" : \"8\", \"9\" : \"9\", \"0\" : \"0\" }"}]}}},
+        caretVisibility: CaretPosition.none,
+    },
+
+};
+
+export default initialMorseCodeState;
