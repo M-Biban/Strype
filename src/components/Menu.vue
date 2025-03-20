@@ -526,15 +526,6 @@ export default Vue.extend({
         },
     },
 
-    watch: {
-        shareProjectMode(){
-            // Whenever the sharing mode changes, we make sure we trigger a new link generation mechanism that will:
-            // 1) reset the shared link, and 2) reset the timer associated with the generation.
-            this.shareProjectInitialCall = false;
-            this.getSharingLink(this.shareProjectMode);
-        },
-    },
-
     methods: {
         downloadHex() {
             downloadHex();
