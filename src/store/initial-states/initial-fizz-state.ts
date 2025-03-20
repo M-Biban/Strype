@@ -86,7 +86,7 @@ const initialFizzState: EditorFrameObjects = {
         jointFrameIds: [],
         labelSlotsDict: {
             0: {slotStructures: {operators: [], fields: [{code: "arr"}]}},
-            1: {slotStructures: {operators: [], fields: [{code: "[]"}]}},
+            1: {slotStructures: {operators: [{code: ""}, {code: ""}], fields: [{code: ""}, {openingBracketValue: "[", fields:[{code: " "}], operators: []}, {code: ""}]}},
         },
         caretVisibility: CaretPosition.none,
     },

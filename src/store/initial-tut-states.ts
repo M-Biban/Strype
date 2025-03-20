@@ -1,36 +1,14 @@
 import { TutorialObjects } from "@/types/tutorial-types";
-import initialTut1State from "./initial-states/initial-tut-1";
-import Tut1Tests from "./tut-tests/tut-1-tests";
-import initialTut2State from "./initial-states/initial-tut-2";
-import Tut2Tests from "./tut-tests/tut-2-tests";
 import initialPrimeState from "./initial-states/initial-prime-state";
 import PrimeTutTests from "./tut-tests/prime-tut-tests";
 import initialFizzState from "./initial-states/initial-fizz-state";
 import FizzTutTests from "./tut-tests/fizz-tut-tests";
 import initialMorseCodeState from "./initial-states/initial-morse-code-state";
 import MorseCodeTests from "./tut-tests/morse-code-tests";
+import initialGameState from "./initial-states/initial-game-state";
+import GameTests from "./tut-tests/game-tut-tests";
 
 const Tutorials : TutorialObjects = {
-    "/tut1" : {
-        name: "simple",
-        difficulty: 1,
-        url: "/tut1",
-        initialState: initialTut1State,
-        tests: Tut1Tests,
-        nextAvailableId: 3,
-        description: "A simple first tutorial.",
-    },
-
-    "/tut2" : {
-        name: "second",
-        difficulty: 1,
-        url: "/tut2",
-        initialState: initialTut2State,
-        tests: Tut2Tests,
-        nextAvailableId: 3,
-        description: "A second tutorial to get to grips with Strype.",
-    },
-
     "/tutPrimes" : {
         name: "Prime numbers",
         difficulty: 1,
@@ -57,8 +35,18 @@ const Tutorials : TutorialObjects = {
         url: "/tutMorseCode",
         initialState: initialMorseCodeState,
         tests: MorseCodeTests,
-        nextAvailableId: 5,
-        description: "Create a 2 player Tic-Tac-Toe game with win detection",
+        nextAvailableId: 6,
+        description: "Convert English text into Morse code (and vice versa).",
+    },
+
+    "/tutGame" : {
+        name:"Game",
+        difficulty: 3,
+        url: "/tutGame",
+        initialState: initialGameState,
+        tests: GameTests,
+        nextAvailableId: 9,
+        description: "Create a text-based Adventure game!",
     },
 };
 
