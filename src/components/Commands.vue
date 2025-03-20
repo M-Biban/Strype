@@ -9,7 +9,7 @@
                     <span class="gdrive-sync-label" v-if="!isProjectNotSourced && !isEditorContentModifiedFlag" v-t="'appMessage.savedGDrive'" />
                     <span class="gdrive-sync-label" v-else-if="isEditorContentModifiedFlag" v-t="'appMessage.modifGDrive'" :class="{'modifed-label-span': isProjectNotSourced}" />
                 </div>
-            </div>     
+            </div>  
             <div @mousedown.prevent.stop @mouseup.prevent.stop>
                 /* IFTRUE_isMicrobit
                 <b-tabs id="commandsTabs" content-class="mt-2" v-model="tabIndex">
@@ -570,6 +570,7 @@ export default Vue.extend({
     },
 
     methods: {
+
         addFrameCommandUID(commandType: string): string {
             return getAddFrameCmdElementUID(commandType);
         },

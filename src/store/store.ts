@@ -15,6 +15,9 @@ import $ from "jquery";
 import { BvModalEvent } from "bootstrap-vue";
 import { nextTick } from "@vue/composition-api";
 import { TPyParser } from "tigerpython-parser";
+import Tutorials from "./initial-tut-states";
+import { TestObject, TestObjects, TutorialObject } from "@/types/tutorial-types";
+import axios from "axios";
 
 let initialState: StateAppObject = initialStates["initialPythonState"];
 /* IFTRUE_isMicrobit */
@@ -166,6 +169,8 @@ export const useStore = defineStore("app", {
             DAPWrapper: {} as DAPWrapper,
 
             previousDAPWrapper: {} as DAPWrapper,
+
+            tutorialInitialCode: "",
         };
     },
 
@@ -2814,5 +2819,114 @@ export const useStore = defineStore("app", {
                 this.selectMultipleFrames(direction);
             } while (previousFramesSelection.length !== this.selectedFrames.length && !this.selectedFrames.includes(stopId));
         },
+
+        initialiseTutorialState(path: string, isSharedUrl: boolean) {
+            const is: TutorialObject = Tutorials[path];
+            if(!isSharedUrl){
+                this.frameObjects = cloneDeep(is.initialState);
+                this.nextAvailableId = is.nextAvailableId; 
+            } 
+            else{
+                this.nextAvailableId = Object.keys(this.frameObjects).length - 3;
+            }
+            this.debugging = false;
+            this.showKeystroke = false;
+
+            this.currentFrame = { id: -3, caretPosition: CaretPosition.body};
+            this.selectedFrames = [];
+            this.copiedFrames = {};
+            this.isEditing = false;
+            this.isDraggingFrame = false;
+            this.preCompileErrors = [];
+            this.errorCount = 0;
+        },
+
+        async createNewTutorial(filePath: string): Promise<TutorialObject>{
+            const response = await axios.get(filePath);
+            const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
+            return tut;
+        },
+
+        parseTutorial(file: string, path: string): TutorialObject{
+            const lines = file.split("testsStart");
+            const tut: Partial<TutorialObject> = {};
+
+            (lines[0].split("\n") as string[]).forEach((line) => {
+                const [key, value] = line.split("=");
+
+                if (!key||!value){
+                    return;
+                }
+
+                const trimmedKey = key.trim();
+                const trimmedValue = value.trim();
+
+                switch(trimmedKey){
+                case "name":
+                    tut.name = trimmedValue;
+                    break;
+                case "difficulty":
+                    tut.difficulty = parseInt(trimmedValue);
+                    break;
+                case "description":
+                    tut.description = trimmedValue;
+                    break;
+                }
+                tut.url = path; // add update to tut.tests here
+            });
+            const otherLines = lines[1].split("initialStateStart");
+            this.tutorialInitialCode = otherLines[1];
+            tut.tests = this.parseTests(otherLines[0]);
+            Tutorials[path] = tut as TutorialObject;
+            return tut as TutorialObject;
+        },
+
+        parseTests(tests: string): TestObjects{
+            let counter = 0;
+            let currentTest : Partial<TestObject> = {};
+            const currentTests: Partial<TestObjects> = {};
+
+            (tests.trim().split("\n") as string[]).forEach((line) => {
+
+                const [key, value] = line.split("=");
+
+                if(!key||!value){
+                    return;
+                }
+
+                const trimmedKey = key.trim();
+                const trimmedValue = value.trim();
+
+                switch(trimmedKey){
+                case "name":
+                    if (currentTest.name){
+                        counter += 1;
+                        currentTest.complete = false;
+                        currentTests[counter] = currentTest as TestObject;
+                        currentTest = {};
+                    }
+                    currentTest.name = trimmedValue;
+                    break;
+                case "description":
+                    currentTest.description = trimmedValue;
+                    break;
+                case "hint":
+                    currentTest.hint = trimmedValue;
+                    break;
+                case "expectedOutput":
+                    currentTest.expectedOutput = JSON.parse(trimmedValue);
+                    break;
+                case "test":
+                    currentTest.test = JSON.parse(trimmedValue);
+                    break;
+                }
+                if(currentTest.name){
+                    currentTests[counter + 1] = currentTest as TestObject;
+                }
+            });
+
+            return currentTests as TestObjects;
+        },
+
     },
 });

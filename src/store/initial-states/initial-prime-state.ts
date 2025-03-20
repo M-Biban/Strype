@@ -1,6 +1,6 @@
 import {CaretPosition, EditorFrameObjects, RootContainerFrameDefinition, ImportsContainerDefinition, FuncDefContainerDefinition, MainFramesContainerDefinition, getFrameDefType, AllFrameTypesIdentifier} from "@/types/types";
 
-const initialPythonState: EditorFrameObjects = {
+const initialPrimeState: EditorFrameObjects = {
     0: {
         id: 0,
         frameType : RootContainerFrameDefinition,
@@ -35,7 +35,7 @@ const initialPythonState: EditorFrameObjects = {
         isSelected: false,
         isVisible: true,
         parentId: 0,
-        childrenIds: [],
+        childrenIds: [1],
         jointParentId: 0,
         jointFrameIds: [],
         labelSlotsDict: { },
@@ -49,7 +49,7 @@ const initialPythonState: EditorFrameObjects = {
         isSelected: false,
         isVisible: true,
         parentId: 0,
-        childrenIds: [1,2],
+        childrenIds: [],
         jointParentId: 0,
         jointFrameIds: [],
         labelSlotsDict: {},
@@ -58,37 +58,36 @@ const initialPythonState: EditorFrameObjects = {
     },
 
     1: {
-        frameType: getFrameDefType(AllFrameTypesIdentifier.varassign),
+        frameType: getFrameDefType(AllFrameTypesIdentifier.funcdef),
         id: 1,
         isDisabled: false,
         isSelected: false,
         isVisible: true,
-        parentId: -3,
-        childrenIds: [],
+        parentId: -2,
+        childrenIds: [2],
         jointParentId: 0,
         jointFrameIds: [],
         labelSlotsDict: {
-            0: {slotStructures: {operators: [], fields: [{code: "myString"}]}},
-            1: {slotStructures: {operators: [{code: ""}, {code: ""}], fields: [{code: ""}, {code: "Hello from Python!"}, {code: ""}]}}},
+            0: {slotStructures: {operators: [], fields: [{code: "isPrime"}]}},
+            1: {slotStructures: {operators: [], fields: [{code: "num"}]}},
+        },
         caretVisibility: CaretPosition.none,
     },
 
     2: {
-        frameType: getFrameDefType(AllFrameTypesIdentifier.funccall),
+        frameType: getFrameDefType(AllFrameTypesIdentifier.comment),
         id: 2,
         isDisabled: false,
         isSelected: false,
         isVisible: true,
-        parentId: -3,
+        parentId: 1,
         childrenIds: [],
         jointParentId: 0,
         jointFrameIds: [],
-        labelSlotsDict: {0: {slotStructures: {operators: [{code: ""}, {code: ""}], fields: [{code: "print"}, {openingBracketValue: "(", fields:[{code: "myString"}], operators: []}, {code: ""}]}}},
+        labelSlotsDict: {0: {slotStructures: {operators: [], fields: [{code: "Write your code here:"}]}}},
         caretVisibility: CaretPosition.none,
     },
 
 };
 
-export default initialPythonState;
-
-
+export default initialPrimeState;

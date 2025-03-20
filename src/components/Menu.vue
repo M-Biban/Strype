@@ -37,6 +37,10 @@
             <!-- save project -->
             <a :id="saveProjectLinkId" v-show="showMenu" class="strype-menu-link strype-menu-item" @click="handleSaveMenuClick">{{$t('appMenu.saveProject')}}<span class="strype-menu-kb-shortcut">{{saveProjectKBShortcut}}</span></a>
             <a v-if="showMenu" :class="{'strype-menu-link strype-menu-item': true, disabled: !isSynced }" v-b-modal.save-strype-project-modal-dlg v-t="'appMenu.saveAsProject'"/>
+            <div class="menu-separator-div"></div>
+            <a v-if="showMenu" class="strype-menu-link strype-menu-item">
+                <router-link :to="{name: 'TutorialPage'}">Tutorials</router-link>
+            </a>
             <ModalDlg :dlgId="saveProjectModalDlgId" :autoFocusButton="'ok'">
                 <div class="save-project-modal-dlg-container">
                     <div class="row">
@@ -297,6 +301,11 @@ export default Vue.extend({
                 });
             }
         });
+
+        if(this.isUrlTutorial){
+            this.loadProject();
+        }
+
     },
 
     beforeDestroy(){
@@ -498,6 +507,22 @@ export default Vue.extend({
                     accept: { "text/x-python": [".py"] },
                 },
             ];
+        },
+
+        isUrlTutorial(): boolean{
+            if(this.$route.fullPath.includes("?file=")){
+                return true;
+            }
+            return false;
+        },
+    },
+
+    watch: {
+        shareProjectMode(){
+            // Whenever the sharing mode changes, we make sure we trigger a new link generation mechanism that will:
+            // 1) reset the shared link, and 2) reset the timer associated with the generation.
+            this.shareProjectInitialCall = false;
+            this.getSharingLink(this.shareProjectMode);
         },
     },
 
@@ -899,7 +924,26 @@ export default Vue.extend({
             const selectValue = this.getTargetSelectVal();
             // Reset the temporary sync file flag
             this.tempSyncTarget = this.appStore.syncTarget;
-            if(selectValue == StrypeSyncTarget.gd || this.openSharedProjectId.length > 0 ){
+            if(this.isUrlTutorial){
+                const emitPayload: AppEvent = {requestAttention: true};
+                emitPayload.message = this.$i18n.t("appMessage.editorFileUpload").toString();
+                this.$emit("app-showprogress", emitPayload);
+                console.log("tut: " + useStore().tutorialInitialCode);
+                // Directly pass the Python code string
+                if (useStore().tutorialInitialCode.trimStart().startsWith("{")) {
+                    this.appStore.setStateFromJSONStr({
+                        stateJSONStr: useStore().tutorialInitialCode,
+                    }).then(() => this.onFileLoaded("direct_input.py", new Date().getTime(), undefined));
+                } 
+                else {
+                    (this.$root.$children[0] as InstanceType<typeof App>)
+                        .setStateFromPythonFile(useStore().tutorialInitialCode, "direct_input.py", new Date().getTime(), undefined);
+                }
+
+                emitPayload.requestAttention=false;
+                this.$emit("app-showprogress", emitPayload); 
+            }
+            else if(selectValue == StrypeSyncTarget.gd  || this.openSharedProjectId.length > 0 ){
                 (this.$refs[this.googleDriveComponentId] as InstanceType<typeof GoogleDrive>).loadFile();
             }
             else{               

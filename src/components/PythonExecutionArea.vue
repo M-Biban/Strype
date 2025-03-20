@@ -1,6 +1,41 @@
 
 <template>
     <div id="peaComponent" :class="{'expanded-PEA': isExpandedPEA}" ref="peaComponent" @mousedown="handlePEAMouseDown">
+        <div v-if=isTutorialPage1 style="width: 100%">
+            <b-carousel
+                :interval="0"
+                indicators
+                controls
+                v-model="currentSlide"
+                @sliding-end = "saveSlideIndex"
+            >
+                <b-carousel-slide v-for="test in Object.values(tests)" :key="test">
+                    <template #img>
+                        <b-card>
+                            <div style="margin-left: 32px; width: 86%">
+                            <div class="row" style="width: 100%; margin-left: 0.05em;">
+                                <b-card-title>{{ test.name }}</b-card-title>
+                                <div class="flex-padding"></div>
+                                <div class="button-row">
+                                    <b-button v-b-modal.modal-scrollable @click="openModal(test)" class="hint-button"><i class="bi bi-question"></i></b-button>
+                                    <div class="flex-padding"></div>
+                                    <b-button @click="runTests(test)" class="hint-button"><i class="bi bi-play"></i></b-button>
+                                </div>
+                            </div>
+                            <b-card-subtitle>{{ test.description }}</b-card-subtitle>
+                            </div>
+                        </b-card>
+                    </template>
+                </b-carousel-slide>
+            </b-carousel>
+            <b-modal id="modal-scrollable" scrollable title="Need a hint?" content-class="my-modal-class" header-class="modal-header" hide-footer>
+                <div v-if= selectedTest class="modal-body">
+                    <h1 class="modal-title">{{ selectedTest.name }}</h1>
+                    <strong>{{ selectedTest.description }}</strong>
+                    <div>{{ selectedTest .hint }}</div>
+                    </div>
+            </b-modal>
+        </div>
         <div id="peaControlsDiv" :class="{'expanded-PEA-controls': isExpandedPEA}">           
             <b-tabs v-model="peaDisplayTabIndex" no-key-nav>
                 <b-tab :title="'\u2771\u23BD '+$t('PEA.console')" title-link-class="pea-display-tab" active></b-tab>
@@ -50,6 +85,9 @@ import { checkEditorCodeErrors, computeAddFrameCommandContainerHeight, countEdit
 import i18n from "@/i18n";
 import { PythonExecRunningState } from "@/types/types";
 import Menu from "@/components/Menu.vue";
+import Tutorials from "@/store/initial-tut-states";
+import { TestObject, TestObjects, TutorialObject } from "@/types/tutorial-types";
+
 
 export default Vue.extend({
     name: "PythonExecutionArea",
@@ -65,10 +103,13 @@ export default Vue.extend({
             isTurtleListeningMouseEvents: false, // flag to indicate whether an execution of Turtle resulted in listen for mouse events on Turtle
             isTurtleListeningTimerEvents: false, // flag to indicate whether an execution of Turtle resulted in listen for timer events on Turtle
             stopTurtleUIEventListeners: undefined as ((keepShowingTurtleUI: boolean)=>void) | undefined, // registered callback method to clear the Turtle listeners mentioned above
+            currentSlide: 0, // Stores the current slide index
+            selectedTest: null as TestObject | null,
+            tests: {} as TestObjects,
         };
     },
 
-    mounted(){
+    async mounted(){
         // Just to prevent any inconsistency with a uncompatible state, set a state value here and we'll know we won't get in some error
         useStore().pythonExecRunningState = PythonExecRunningState.NotRunning;
         
@@ -156,6 +197,9 @@ export default Vue.extend({
             }
         });
        
+        this.loadSavedSlide();
+
+        this.tests = await this.getTests();
     },
 
     computed:{
@@ -194,6 +238,12 @@ export default Vue.extend({
         isTurtleListeningEvents(): boolean {
             return this.isTurtleListeningKeyEvents || this.isTurtleListeningMouseEvents || this.isTurtleListeningTimerEvents;
         },
+
+
+        isTutorialPage1(): boolean {
+            return this.$route.path.startsWith("/tut");
+        },
+
     },
 
     watch: {
@@ -254,7 +304,7 @@ export default Vue.extend({
             }
         },
         
-        execPythonCode() {
+        execPythonCode(test: TestObject | null = null) {
             const pythonConsole = this.$refs.pythonConsole as HTMLTextAreaElement;
             pythonConsole.value = "";
             setPythonExecAreaExpandButtonPos();
@@ -279,10 +329,46 @@ export default Vue.extend({
                 }
 
                 const parser = new Parser();
-                const userCode = parser.getFullCode();
+                let userCode = parser.getFullCode();
                 parser.getErrorsFormatted(userCode);
+                if(test){
+                    let functionCalls = test.test.map((call) => ("print(" + call + ")")).join("\n");
+                    let expectedOutput = test.expectedOutput.map((out) => ("print(\"" + out + "\")")).join("\n");
+
+                    userCode = userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
+
+                    console.log(userCode);
+                }
+
                 // Trigger the actual Python code execution launch
                 execPythonCode(pythonConsole, this.$refs.pythonTurtleDiv as HTMLDivElement, userCode, parser.getFramePositionMap(),() => useStore().pythonExecRunningState != PythonExecRunningState.RunningAwaitingStop, (finishedWithError: boolean, isTurtleListeningKeyEvents: boolean, isTurtleListeningMouseEvents: boolean, isTurtleListeningTimerEvents: boolean, stopTurtleListeners: VoidFunction | undefined) => {
+                    // We need to check if it has passed the tests, if available
+                    if(test){
+                        let count = 0;
+                        const failed = [];
+                        console.log(pythonConsole.value);
+                        const split = pythonConsole.value.split("Actual output: \n");
+                        const endResult = split[1].trim().split("\n");
+                        const expected = split[0].trim().split("Expected output: \n")[1].trim().split("\n");
+                        const userOutput = split[0].trim().split("Expected output: \n")[0];
+                        for(let i = 0; i < test.test.length; i++) {
+                            if(expected[i] === endResult[i]){
+                                count = count + 1;
+                            }
+                            else{
+                                failed.push(test.test[i]);
+                            }
+                        }
+                        if (failed.length > 0){
+                            this.$set(test, "completed", false);
+                            userCode = userOutput +""+count+"/"+test.test.length+ " tests passed!\n"+"failed tests:\n"+failed.join("\n");
+                        }
+                        else{
+                            this.$set(test, "completed", true);
+                            userCode = userOutput +""+count+"/"+test.test.length+ " tests passed!\n";
+                        }
+                        pythonConsole.value = userCode;
+                    }
                     // After Skulpt has executed the user code, we need to check if a keyboard listener is still pending from that user code.
                     this.isTurtleListeningKeyEvents = !!isTurtleListeningKeyEvents; 
                     this.isTurtleListeningMouseEvents = !!isTurtleListeningMouseEvents; 
@@ -453,6 +539,81 @@ export default Vue.extend({
                 useStore().pythonExecRunningState = PythonExecRunningState.RunningAwaitingStop;              
             }
         },
+
+        runTests(test: TestObject) {
+            // The Python code execution has a 3-ways states:
+            // - not running when nothing happens, click will trigger "running"
+            // - running when some code is running, click will trigger "running awaiting stop"
+            // - running awaiting stop will do nothing
+            switch (useStore().pythonExecRunningState) {
+            case PythonExecRunningState.NotRunning:
+                useStore().pythonExecRunningState = PythonExecRunningState.Running;
+                this.execPythonCode(test);
+                return;
+            case PythonExecRunningState.Running:
+                // There are 2 possible scenarios, which depends on the user code:
+                // 1) the code contains some "event" listening functions but is written in a way that Turtle execution ends (Skulpt) and still listens:
+                // 2) there is no "event" listening function in the code, or the code is written in a way that Turtle execution keeps pending (Skulpt)
+
+                // Case 1): we know we are in this case when we have registered a function to call to "manually" stop the listeners,
+                // that is all that needs to be done, Skulpt has already effectively terminated, we can just call the function and change the state.
+                if(this.stopTurtleUIEventListeners){
+                    this.isTurtleListeningKeyEvents = false;
+                    this.isTurtleListeningMouseEvents = false;
+                    this.isTurtleListeningTimerEvents = false;
+                    this.updateTurtleListeningEvents();
+                    return;
+                }
+
+                // Case 2): Skulpt checks this property regularly while running, via a callback,
+                // so just setting the variable is enough to "request" a stop 
+                useStore().pythonExecRunningState = PythonExecRunningState.RunningAwaitingStop;
+                return;
+            case PythonExecRunningState.RunningAwaitingStop:
+                // Else, nothing more we can do at the moment, just waiting for Skulpt to see it
+                return;
+            }
+        },
+
+        saveSlideIndex(slideIndex: any) {
+            localStorage.setItem("savedSlide", slideIndex);
+        },
+        
+        loadSavedSlide() {
+            const savedIndex = localStorage.getItem("savedSlide");
+            if (savedIndex !== null) {
+                this.currentSlide = parseInt(savedIndex, 10);
+            }
+        },
+
+        openModal(test: TestObject){
+            this.selectedTest = test;
+        },
+
+        async createTutorial(): Promise<TutorialObject>{
+            return await useStore().createNewTutorial(this.$route.query.file as string) as unknown as TutorialObject;
+        },
+
+        async getTutorial(): Promise<TutorialObject> {
+            let tut = Tutorials[this.$route.path];
+            if(tut === undefined){
+                tut = Tutorials[this.$route.query.file as string];
+                if(tut === undefined){
+                    tut = await this.createTutorial();
+                    console.log(tut);
+                }
+            }
+            return tut;
+        },
+
+        async getTests() : Promise<TestObjects>{
+            const tut = await this.getTutorial();
+            return tut.tests;
+        },
+    },
+
+    beforeDestroy() {
+        localStorage.removeItem("savedSlide");
     },
 
 });
@@ -608,5 +769,86 @@ export default Vue.extend({
         position: absolute;
         top: 10px;
         left: 10px;
-    }    
+    }
+
+    .carousel .carousel-control-prev-icon { 
+        background-color: rgb(142, 196, 158);
+    }
+    .carousel .carousel-control-next-icon { 
+        background-color: rgb(142, 196, 158);
+    }
+
+    .carousel .carousel-indicators li { background-color: gray; }
+    .carousel .carousel-indicators li.active { background-color: rgb(142, 196, 158); }
+
+</style>
+
+<style lang="css" scoped>
+    .hint-button {
+        width: 2em;
+        height: 2em;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(107, 134, 120);
+        border-radius: 50%;
+        cursor: pointer;
+        transition-duration: .3s;
+        border: none;
+        opacity: 70%;
+        z-index: 10;
+    }
+
+    .hint-button:hover {
+        opacity: 100%;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    /deep/ .my-modal-class{
+        background-color: #ffffff;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        padding: 24px;
+        overflow: hidden;
+    }
+
+    .modal-body {
+        text-align: center;
+    }
+    
+    .modal-title {
+        color: #708371;
+        margin-bottom: 12px;
+        font-weight: bold;
+    }
+
+    /deep/ .modal-header {
+        background-color: #708371;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.5rem;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        padding: 16px;
+    }
+
+    /deep/ .modal-footer {
+        background-color: #f0f4f8;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 24px;
+    }
+
+
 </style>

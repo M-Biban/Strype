@@ -50,7 +50,6 @@ const initialStates: StateAppObjects = {
         nextAvailableId: 4,
     },
 
-
 };
 
 export default initialStates;
