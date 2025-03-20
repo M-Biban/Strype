@@ -4,10 +4,12 @@
             <h1 class="bold-header display-2">Tutorials</h1>
             <i>Mini projects you can complete to help on your programming journey!</i>
             <div class="button-row">
-                <i>Want to import a tutorial?</i>
-                <div class="row">
+                <div>
+                    <i>Want to import a tutorial?</i>
+                </div>
+                <div class="upload-row row">
                     <button @click="showModal = true" class="new-tutorial-button"><i class="bi bi-upload"></i></button>
-                    <button class="new-tutorial-button"><i class="bi bi-question"></i></button>
+                    <button @click="infoModal = true" class="new-tutorial-button"><i class="bi bi-question"></i></button>
                 </div>
             </div>
             
@@ -39,12 +41,34 @@
                     <b-form-input id="tutorial-link" v-model="link" required placeholder="Enter the link"></b-form-input>
                 </b-form-group>
             </b-form>
-            <div class="row">
+            <div class="upload-row row">
                     <b-button class="continue-button" variant="secondary" @click="showModal = false">Cancel</b-button>
                     <router-link :to="{ name: 'URLTutorialPage' }">
                         <b-button class="continue-button" variant="primary">Proceed</b-button>
                     </router-link>
             </div>
+            </div>
+        </b-modal>
+
+        <b-modal v-model="infoModal" title="Info" content-class="my-modal-class" header-class="modal-header" hide-footer>
+            <div class="modal-body">
+            <p class="modal-title">Template for custom tutorials</p>
+            <pre class="code-block">name={Name of your tutorial}
+difficulty={tutorial difficulty}
+description={tutorial description}
+testsStart
+
+name="{test name}"
+description="{test description}"
+hint="{test hint}"
+expectedOutput=["{output of test 1}", "{output of test 2}"]
+test=["{test1}", "{test2}"]
+
+// Feel free to add more tests below in the same structure. Delete this line once ready to upload
+
+initialStateStart
+{python code}
+            </pre>
             </div>
         </b-modal>
     </div>
@@ -60,10 +84,11 @@ import Vue from "vue";
 export default Vue.extend({
     name: "TutorialPage",
 
-    data(): { Tutorials: typeof Tutorials; showModal: boolean; link: string}{
+    data(): { Tutorials: typeof Tutorials; showModal: boolean; infoModal: boolean; link: string}{
         return {
             Tutorials,
             showModal: false,
+            infoModal: false,
             link: "",
         };
     },
@@ -95,9 +120,8 @@ export default Vue.extend({
   .button-row{
     display: flex;
     flex-wrap: wrap;
-    margin-right: -15px;
-    margin-left: -15px;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .new-tutorial-button {
@@ -140,6 +164,10 @@ export default Vue.extend({
         opacity: 100%;
     }
 
+    .upload-row {
+        gap: 0.5em;
+    }
+
 
 </style>
 
@@ -163,6 +191,18 @@ export default Vue.extend({
         margin-bottom: 12px;
         font-weight: bold;
     }
+
+    .code-block {
+    background-color: #f5f5f5; 
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1em;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left;
+}
+
 
     /deep/ .modal-header {
         background-color: #708371;

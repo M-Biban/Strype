@@ -35,7 +35,7 @@ const initialMorseCodeState: EditorFrameObjects = {
         isSelected: false,
         isVisible: true,
         parentId: 0,
-        childrenIds: [],
+        childrenIds: [2, 4],
         jointParentId: 0,
         jointFrameIds: [],
         labelSlotsDict: { },
@@ -73,6 +73,67 @@ const initialMorseCodeState: EditorFrameObjects = {
         caretVisibility: CaretPosition.none,
     },
 
+    2: {
+        frameType: getFrameDefType(AllFrameTypesIdentifier.funcdef),
+        id: 2,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: -2,
+        childrenIds: [3],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {
+            0: {slotStructures: {operators: [], fields: [{code: "text_to_morse"}]}},
+            1: {slotStructures: {operators: [], fields: [{code: "text"}]}},
+        },
+        caretVisibility: CaretPosition.none,
+    },
+
+    3: {
+        frameType: getFrameDefType(AllFrameTypesIdentifier.comment),
+        id: 3,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 2,
+        childrenIds: [],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {0: {slotStructures: {operators: [], fields: [{code: "Write your code here:"}]}}},
+        caretVisibility: CaretPosition.none,
+    },
+
+    4: {
+        frameType: getFrameDefType(AllFrameTypesIdentifier.funcdef),
+        id: 4,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: -2,
+        childrenIds: [5],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {
+            0: {slotStructures: {operators: [], fields: [{code: "morse_to_text"}]}},
+            1: {slotStructures: {operators: [], fields: [{code: "morse"}]}},
+        },
+        caretVisibility: CaretPosition.none,
+    },
+
+    5: {
+        frameType: getFrameDefType(AllFrameTypesIdentifier.comment),
+        id: 5,
+        isDisabled: false,
+        isSelected: false,
+        isVisible: true,
+        parentId: 4,
+        childrenIds: [],
+        jointParentId: 0,
+        jointFrameIds: [],
+        labelSlotsDict: {0: {slotStructures: {operators: [], fields: [{code: "Write your code here:"}]}}},
+        caretVisibility: CaretPosition.none,
+    },
 };
 
 export default initialMorseCodeState;

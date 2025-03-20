@@ -23,9 +23,6 @@
                                 </div>
                             </div>
                             <b-card-subtitle>{{ test.description }}</b-card-subtitle>
-                            <!-- <div>
-                                <b-button @click="runTests(test)">run</b-button>
-                            </div> -->
                             </div>
                         </b-card>
                     </template>
