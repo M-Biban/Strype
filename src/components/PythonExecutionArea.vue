@@ -9,7 +9,7 @@
                 v-model="currentSlide"
                 @sliding-end = "saveSlideIndex"
             >
-                <b-carousel-slide v-for="test in Object.values(tests)" :key="test">
+                <b-carousel-slide v-for="test in Object.values(tests)" :key="test.id">
                     <template #img>
                         <b-card>
                             <div style="margin-left: 32px; width: 86%">
@@ -578,6 +578,7 @@ export default Vue.extend({
         },
 
         async createTutorial(): Promise<TutorialObject>{
+            console.log("here at create Tutorial");
             return await useStore().createNewTutorial(this.$route.query.file as string) as unknown as TutorialObject;
         },
 

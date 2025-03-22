@@ -16,7 +16,7 @@
         </div>
         <div class="row align-items-center justify-content-center" style="max-height: 80vh; overflow-y: auto;">
         <div class="d-block align-items-center p-2" style="max-width:50%;">
-            <div v-for="tutorial in Tutorials" :key="tutorial" class="col-12 mb-3">
+            <div v-for="(tutorial, index) in Tutorials" :key="index" class="col-12 mb-3">
                 <router-link :to="{ name: tutorial.name }" :title="$i18n.t('appMenu.tutorial')" class="text-decoration-none">
                 <b-card class="d-flex flex-row align-items-center text-dark card-style">
                     <b-card-body class="flex-grow-1 d-flex justify-content-between align-items-center">

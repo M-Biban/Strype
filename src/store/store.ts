@@ -2820,6 +2820,7 @@ export const useStore = defineStore("app", {
 
         initialiseTutorialState(path: string, isSharedUrl: boolean) {
             const is: TutorialObject = Tutorials[path];
+            console.log("is: " + is);
             if(!isSharedUrl){
                 this.frameObjects = cloneDeep(is.initialState);
                 this.nextAvailableId = is.nextAvailableId; 
@@ -2840,9 +2841,14 @@ export const useStore = defineStore("app", {
         },
 
         async createNewTutorial(filePath: string): Promise<TutorialObject>{
-            const response = await axios.get(filePath);
-            const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
-            return tut;
+            try{
+                const response = await axios.get(filePath);
+                const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
+                return tut;
+            } 
+            catch(error){
+                throw new Error("Unable to fetch or parse the tutorial file.");
+            }
         },
 
         parseTutorial(file: string, path: string): TutorialObject{
@@ -2874,6 +2880,7 @@ export const useStore = defineStore("app", {
             });
             const otherLines = lines[1].split("initialStateStart");
             this.tutorialInitialCode = otherLines[1];
+            tut.tutorialCode = otherLines[1];
             tut.tests = this.parseTests(otherLines[0]);
             Tutorials[path] = tut as TutorialObject;
             return tut as TutorialObject;
@@ -2924,6 +2931,14 @@ export const useStore = defineStore("app", {
             });
 
             return currentTests as TestObjects;
+        },
+
+        async fetchTutorialInitialCode(filePath: string) : Promise<string> {
+            if (!this.tutorialInitialCode){
+                const tutorial = await this.createNewTutorial(filePath);
+                this.tutorialInitialCode = tutorial.tutorialCode || "";
+            }
+            return this.tutorialInitialCode;
         },
 
     },

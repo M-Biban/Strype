@@ -775,6 +775,7 @@ export const MessageTypes = {
     gdriveCantCreateStrypeFolder:"gdriveCantCreateStrypeFolder",
     gdriveFileAlreadyExists: "gdriveFileAlreadyExists",
     invalidPythonParseImport: "invalidPythonParseImport",
+    invalidTutorialParseImport: "invalidTutorialParseImport",
     invalidPythonParsePaste: "invalidPythonParsePaste",
 };
 
@@ -897,6 +898,17 @@ const InvalidPythonParsePaste: MessageDefinition = {
     },
 };
 
+const InvalidTutorialParseImport: MessageDefinition = {
+    ...NoMessage,
+    type: MessageTypes.invalidTutorialParseImport,
+    message: {
+        path: "messageBannerMessage.invalidTutorialParseImport",
+        args: {
+            [FormattedMessageArgKeyValuePlaceholders.error.key]: FormattedMessageArgKeyValuePlaceholders.error.placeholderName,
+        },
+    },
+};
+
 
 export const MessageDefinitions = {
     NoMessage,
@@ -913,6 +925,7 @@ export const MessageDefinitions = {
     GDriveCantCreateStrypeFolder,
     InvalidPythonParseImport,
     InvalidPythonParsePaste,
+    InvalidTutorialParseImport,
 };
 
 //WebUSB listener

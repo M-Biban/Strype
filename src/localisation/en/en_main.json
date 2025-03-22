@@ -36,6 +36,7 @@
     "gdriveConnectToSaveFailed": "The connection to Google Drive has been lost. The synchronisation with Google Drive is stopped, latest changes may not have been saved.",
     "gdriveCantCreateStrypeFolder": "Strype could not create a default \"Strype\" folder in Google Drive.",
     "invalidPythonParseImport": "Invalid Python code imported: {errorMsg}",
+    "invalidTutorialParseImport": "Invalid Tutorial code imported: {errorMsg}",
     "invalidPythonParsePaste": "Invalid Python code pasted: {errorMsg}",
     "wrongPythonStructCopied": "cannot paste else/elif/except/finally and further content in one paste",
     "incompatiblePythonStrypeSection": "the Python code cannot be placed in the target Strype section"

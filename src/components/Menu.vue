@@ -627,30 +627,52 @@ export default Vue.extend({
             this.$root.$emit("bv::hide::modal", this.saveProjectModalDlgId);
         },
 
-        loadProject(){
+        async loadProject(){
             // Called once sanity save has been performed
             // If the user chose to sync on Google Drive, we should open the Drive loader. Otherwise, we open default file system.
             // DO NOT UPDATE THE CURRENT SYNC FLAG IN THE STATE - we only do that IF loading succeed (because it can be still cancelled or impossible to achieve)
             const selectValue = this.getTargetSelectVal();
             // Reset the temporary sync file flag
             this.tempSyncTarget = this.appStore.syncTarget;
-            if(this.isUrlTutorial){
-                const emitPayload: AppEvent = {requestAttention: true};
+            if (this.isUrlTutorial) {
+                console.log("url tut");
+                const emitPayload: AppEvent = { requestAttention: true };
                 emitPayload.message = this.$i18n.t("appMessage.editorFileUpload").toString();
                 this.$emit("app-showprogress", emitPayload);
-                console.log("tut: " + useStore().tutorialInitialCode);
-                // Directly pass the Python code string
-                if (useStore().tutorialInitialCode.trimStart().startsWith("{")) {
-                    this.appStore.setStateFromJSONStr({
-                        stateJSONStr: useStore().tutorialInitialCode,
-                    }).then(() => this.onFileLoaded("direct_input.py", new Date().getTime(), undefined));
+
+                try {
+                    const tutorialCode = await useStore().fetchTutorialInitialCode(this.$route.query.file as string);
+
+                    if (tutorialCode.trimStart().startsWith("{")) {
+                        await this.appStore.setStateFromJSONStr({
+                            stateJSONStr: tutorialCode,
+                        });
+                        this.onFileLoaded("direct_input.py", new Date().getTime(), undefined);
+                    } 
+                    else {
+                        (this.$root.$children[0] as InstanceType<typeof App>)
+                            .setStateFromPythonFile(tutorialCode, "direct_input.py", new Date().getTime(), undefined);
+                    }
                 } 
-                else {
-                    (this.$root.$children[0] as InstanceType<typeof App>)
-                        .setStateFromPythonFile(useStore().tutorialInitialCode, "direct_input.py", new Date().getTime(), undefined);
+                catch (error) {
+                    // Ensure the error is properly formatted before passing it to showMessage
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+
+                    const msg = cloneDeep(MessageDefinitions.InvalidTutorialParseImport);
+                    const msgObj = msg.message as FormattedMessage;
+                    msgObj.args[FormattedMessageArgKeyValuePlaceholders.error.key] = msgObj.args.errorMsg.replace(
+                        FormattedMessageArgKeyValuePlaceholders.error.placeholderName,
+                        errorMessage
+                    );
+
+                    // Display the error message
+                    useStore().showMessage(msg, 10000);
+                    this.$router.push({
+                        path: " ",
+                    });
                 }
 
-                emitPayload.requestAttention=false;
+                emitPayload.requestAttention = false;
                 this.$emit("app-showprogress", emitPayload); 
             }
             else if(selectValue == StrypeSyncTarget.gd){
@@ -760,6 +782,9 @@ export default Vue.extend({
         },
 
         resetProject(): void {
+            this.$router.push({
+                path: "/",
+            });
             //resetting the project means removing the WebStorage saved project and reloading the page
             //we emit an event to the App so that handlers are done properly
             this.$emit("app-reset-project");

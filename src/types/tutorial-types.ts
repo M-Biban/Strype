@@ -8,6 +8,7 @@ export interface TutorialObject{
     tests: TestObjects,
     nextAvailableId: number,
     description: string;
+    tutorialCode?: string; 
 }
 
 export interface TestObject{
