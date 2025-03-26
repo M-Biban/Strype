@@ -69,7 +69,7 @@ const initialPythonState: EditorFrameObjects = {
         jointFrameIds: [],
         labelSlotsDict: {
             0: {slotStructures: {operators: [], fields: [{code: "myString"}]}},
-            1: {slotStructures: {operators: [{code: ""}, {code: ""}], fields: [{code: ""}, {code: "Hello from Python!"}, {code: ""}]}}},
+            1: {slotStructures: {operators: [{code: ""}, {code: ""}], fields: [{code: ""}, {code: "Hello from Python!", quote:"\""}, {code: ""}]}}},
         caretVisibility: CaretPosition.none,
     },
 

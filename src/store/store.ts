@@ -2820,8 +2820,8 @@ export const useStore = defineStore("app", {
 
         initialiseTutorialState(path: string, isSharedUrl: boolean) {
             const is: TutorialObject = Tutorials[path];
-            console.log("is: " + is);
             if(!isSharedUrl){
+                console.log("here inside");
                 this.frameObjects = cloneDeep(is.initialState);
                 this.nextAvailableId = is.nextAvailableId; 
             } 
@@ -2844,6 +2844,7 @@ export const useStore = defineStore("app", {
             try{
                 const response = await axios.get(filePath);
                 const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
+                
                 return tut;
             } 
             catch(error){
@@ -2876,10 +2877,9 @@ export const useStore = defineStore("app", {
                     tut.description = trimmedValue;
                     break;
                 }
-                tut.url = path; // add update to tut.tests here
+                tut.url = path;
             });
             const otherLines = lines[1].split("initialStateStart");
-            this.tutorialInitialCode = otherLines[1];
             tut.tutorialCode = otherLines[1];
             tut.tests = this.parseTests(otherLines[0]);
             Tutorials[path] = tut as TutorialObject;
@@ -2934,11 +2934,14 @@ export const useStore = defineStore("app", {
         },
 
         async fetchTutorialInitialCode(filePath: string) : Promise<string> {
-            if (!this.tutorialInitialCode){
+            try{
                 const tutorial = await this.createNewTutorial(filePath);
-                this.tutorialInitialCode = tutorial.tutorialCode || "";
+                const tutorialcode = tutorial.tutorialCode || "";
+                return tutorialcode;
             }
-            return this.tutorialInitialCode;
+            catch(error){
+                throw new Error("Unable to fetch tutorial initial code");
+            }                
         },
 
     },

@@ -642,7 +642,7 @@ export default Vue.extend({
 
                 try {
                     const tutorialCode = await useStore().fetchTutorialInitialCode(this.$route.query.file as string);
-
+                    console.log("codeL " + tutorialCode);
                     if (tutorialCode.trimStart().startsWith("{")) {
                         await this.appStore.setStateFromJSONStr({
                             stateJSONStr: tutorialCode,
@@ -667,6 +667,8 @@ export default Vue.extend({
 
                     // Display the error message
                     useStore().showMessage(msg, 10000);
+                    (this.$root.$children[0] as InstanceType<typeof App>)
+                        .setStateFromPythonFile("print(\"hello world\")", "direct_input.py", new Date().getTime(), undefined); // default state if things go wrong
                     this.$router.push({
                         path: " ",
                     });

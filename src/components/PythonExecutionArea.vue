@@ -22,7 +22,7 @@
                                     <b-button @click="runTests(test)" class="hint-button"><i class="bi bi-play"></i></b-button>
                                 </div>
                             </div>
-                            <b-card-subtitle>{{ test.description }}</b-card-subtitle>
+                            <p>{{ test.description }}</p>
                             </div>
                         </b-card>
                     </template>
@@ -106,6 +106,7 @@ export default Vue.extend({
             currentSlide: 0, // Stores the current slide index
             selectedTest: null as TestObject | null,
             tests: {} as TestObjects,
+            currentTestComplete: false,
         };
     },
 
@@ -189,8 +190,9 @@ export default Vue.extend({
             });
         }
         this.loadSavedSlide();
-
-        this.tests = await this.getTests();
+        if(this.isTutorialPage1){
+            this.tests = await this.getTests();
+        }
     },
 
     computed:{
@@ -237,6 +239,13 @@ export default Vue.extend({
         peaDisplayTabIndex(){
             // When we change tab, we also check the position of the expand/collapse button
             setPythonExecAreaExpandButtonPos();
+        },
+
+        currentTestComplete(newValue){
+            if(newValue){
+                this.goToNextSlide();
+                this.currentTestComplete = false;
+            }
         },
     },
 
@@ -353,6 +362,7 @@ export default Vue.extend({
                         else{
                             this.$set(test, "completed", true);
                             userCode = userOutput +""+count+"/"+test.test.length+ " tests passed!\n";
+                            this.currentTestComplete = true;
                         }
                         pythonConsole.value = userCode;
                     }
@@ -578,8 +588,12 @@ export default Vue.extend({
         },
 
         async createTutorial(): Promise<TutorialObject>{
-            console.log("here at create Tutorial");
-            return await useStore().createNewTutorial(this.$route.query.file as string) as unknown as TutorialObject;
+            try{
+                return await useStore().createNewTutorial(this.$route.query.file as string) as unknown as TutorialObject; 
+            }
+            catch(error){
+                return {} as TutorialObject;
+            }
         },
 
         async getTutorial(): Promise<TutorialObject> {
@@ -588,7 +602,6 @@ export default Vue.extend({
                 tut = Tutorials[this.$route.query.file as string];
                 if(tut === undefined){
                     tut = await this.createTutorial();
-                    console.log(tut);
                 }
             }
             return tut;
@@ -597,6 +610,13 @@ export default Vue.extend({
         async getTests() : Promise<TestObjects>{
             const tut = await this.getTutorial();
             return tut.tests;
+        },
+
+        goToNextSlide(){
+            if (this.currentSlide < (Object.keys(this.tests).length - 1)){
+                this.currentSlide += 1;
+            }
+            
         },
     },
 

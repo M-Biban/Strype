@@ -17,20 +17,18 @@
         <div class="row align-items-center justify-content-center" style="max-height: 80vh; overflow-y: auto;">
         <div class="d-block align-items-center p-2" style="max-width:50%;">
             <div v-for="(tutorial, index) in Tutorials" :key="index" class="col-12 mb-3">
-                <router-link :to="{ name: tutorial.name }" :title="$i18n.t('appMenu.tutorial')" class="text-decoration-none">
-                <b-card class="d-flex flex-row align-items-center text-dark card-style">
+                <b-card class="d-flex flex-row align-items-center text-dark card-style" @click="handleTutorialClick(tutorial)">
                     <b-card-body class="flex-grow-1 d-flex justify-content-between align-items-center">
                         <div style="max-width: 80%;">
                             <b-card-title class="serif-header text-capitalize"><i class="bi bi-pencil-square"></i>  {{ tutorial.name }}</b-card-title>
                             <b-card-text >{{ tutorial.description }}</b-card-text>
                             <b-list-group flush>
                             <b-list-group-item>Difficulty level <b style="font-size: x-large; margin-left: 0.5em;"> {{ tutorial.difficulty }}</b></b-list-group-item>
-                            </b-list-group>
+                        </b-list-group>
                         </div>
                         <i class="display-4 bi bi-chevron-compact-right"></i>
                     </b-card-body>
                 </b-card>
-                </router-link>
             </div>
         </div>  
         <b-modal v-model="showModal" title="External" @ok="submitForm" content-class="my-modal-class" header-class="modal-header" hide-footer>
@@ -43,9 +41,7 @@
             </b-form>
             <div class="upload-row row">
                     <b-button class="continue-button" variant="secondary" @click="showModal = false">Cancel</b-button>
-                    <router-link :to="{ name: 'URLTutorialPage' }">
-                        <b-button class="continue-button" variant="primary">Proceed</b-button>
-                    </router-link>
+                    <b-button class="continue-button" variant="primary" @click="submitForm">Proceed</b-button>
             </div>
             </div>
         </b-modal>
@@ -77,6 +73,7 @@ initialStateStart
   
 <script lang="ts">
 import Tutorials from "@/store/initial-tut-states";
+import { TutorialObject } from "@/types/tutorial-types";
 
 
 import Vue from "vue";
@@ -95,10 +92,26 @@ export default Vue.extend({
 
     methods: {
         submitForm(): void {
+            console.log("submit");
             this.$router.push({
                 name: "URLTutorialPage",
                 query: {file: this.link},
             });
+        },
+        isRouteAvailable(tutorial: TutorialObject) {
+            return this.$router.getRoutes().some((route) => route.name === tutorial.name);
+        },
+
+        handleTutorialClick(tutorial: TutorialObject): void {
+            if(this.isRouteAvailable(tutorial)){
+                this.$router.push({name: tutorial.name});
+            }
+            else{
+                this.$router.push({
+                    path:"/tut",
+                    query: {file: tutorial.url},
+                });
+            }
         },
     },
 });
