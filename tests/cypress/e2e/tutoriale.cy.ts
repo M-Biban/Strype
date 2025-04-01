@@ -14,6 +14,21 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 });
 
 
+import {assertStateDefinition} from "../support/expression-test-support";
+
+// export function testSelection(code : string, selectKeys: string, expectedAfterDeletion : string) : void {
+//     it("Tests " + code, () => {
+//         focusEditor();
+//         cy.get("body").type("{backspace}{backspace}i");
+//         assertState("{$}");
+//         cy.get("body").type(" " + code);
+//         cy.get("body").type(selectKeys);
+//         cy.get("body").type("{del}");
+//         assertState(expectedAfterDeletion);
+//     });
+// }
+
+
 
 describe("Tutorial Link Navigation", () => {
     // Must clear all local storage between tests to reset the state:
@@ -132,4 +147,97 @@ describe("Upload Tutorial", () => {
         });
     });
     
+});
+
+describe("Complete tutorial", () => {
+    beforeEach(() => {
+        cy.visit("/editor/#/tutPrimes");
+    });
+    it("Goes to the primes tutorial page", () => {
+        cy.url().should("include", "/tutPrimes");
+        assertStateDefinition("{isPrime}({num}");
+    });
+
+    it("Opens hint modal if clicked", () => {
+        cy.get("#hint-Test\\ 1").click();
+        cy.get("#modal-scrollable").should("be.visible");
+
+        cy.get("#modal-scrollable .modal-body").should("contain.text", "Test 1Create a check for negative numbers and edge casesUse an if statement to check if the number is negative. \nIf it is return True, if not return False. Remember! 0 and 1 are not prime so filter them out tooTest 1Create a check for negative numbers and edge casesUse an if statement to check if the number is negative. \nIf it is return True, if not return False. Remember! 0 and 1 are not prime so filter them out too");
+
+        cy.get("#modal-scrollable .modal-header").should("contain.text", "Need a hint?");
+
+    });
+
+    it("handles the case of tests passing correctly", () => {
+        cy.get("#frame_id_-2").type("inum<=1{enter}rFalse");
+        cy.get("#test-Test\\ 1").click();
+
+        cy.wait(500); // wait for subtask to change
+
+        cy.get(".carousel-inner .carousel-item.active")
+            .should("exist")
+            .and("contain.text", "Test 2Check if the number is divisible by any smaller number"); 
+
+        cy.get("#pythonConsole")
+            .invoke("val") // Retrieve the value of the textarea
+            .should("contain", "3/3 tests passed!"); 
+
+        cy.get(".carousel-inner .carousel-item.active")
+            .invoke("text")
+            .then((initialText) => {
+                cy.get("#test-Test\\ 2").click();
+
+                cy.wait(500);
+
+                cy.get(".carousel-inner .carousel-item.active")
+                    .invoke("text")
+                    .should("eq", initialText);
+            });
+    });
+
+    it("Next carousel slide if button is pressed", () => {
+        cy.get(".carousel-control-next").click();
+
+        cy.wait(500); // wait for subtask to change
+
+        cy.get(".carousel-inner .carousel-item.active")
+            .should("exist")
+            .and("contain.text", "Test 2Check if the number is divisible by any smaller number"); 
+
+        cy.get(".carousel-control-next").click();
+
+        cy.wait(500); // wait for subtask to change
+
+        cy.get(".carousel-inner .carousel-item.active")
+            .should("exist")
+            .and("contain.text", "Test 3Handle the case if no divisors are found"); 
+
+        cy.get(".carousel-control-prev").click();
+
+        cy.wait(500); // wait for subtask to change
+
+        cy.get(".carousel-inner .carousel-item.active")
+            .should("exist")
+            .and("contain.text", "Test 2Check if the number is divisible by any smaller number"); 
+    });
+
+    it("handles the case of tests failing correctly", () => {
+        cy.get("#frame_id_-2").type("inum<1{enter}rFalse");
+        cy.get(".carousel-inner .carousel-item.active")
+            .invoke("text")
+            .then((initialText) => {
+                cy.get("#test-Test\\ 1").click();
+
+                cy.wait(500);
+
+                cy.get(".carousel-inner .carousel-item.active")
+                    .invoke("text")
+                    .should("eq", initialText);
+            });
+
+        cy.wait(500);
+        cy.get("#pythonConsole")
+            .invoke("val") // Retrieve the value of the textarea
+            .should("contain", "2/3 tests passed!\nfailed tests:\nisPrime(1)"); 
+    });
 });

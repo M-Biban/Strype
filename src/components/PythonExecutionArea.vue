@@ -17,9 +17,9 @@
                                 <b-card-title>{{ test.name }}</b-card-title>
                                 <div class="flex-padding"></div>
                                 <div class="button-row">
-                                    <b-button v-b-modal.modal-scrollable @click="openModal(test)" class="hint-button"><i class="bi bi-question"></i></b-button>
+                                    <b-button v-b-modal.modal-scrollable @click="openModal(test)" class="hint-button"  :id="'hint-' + test.name"><i class="bi bi-question"></i></b-button>
                                     <div class="flex-padding"></div>
-                                    <b-button @click="runTests(test)" class="hint-button"><i class="bi bi-play"></i></b-button>
+                                    <b-button @click="runTests(test)" class="hint-button" :id="'test-' + test.name"><i class="bi bi-play"></i></b-button>
                                 </div>
                             </div>
                             <p>{{ test.description }}</p>

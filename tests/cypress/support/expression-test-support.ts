@@ -28,6 +28,36 @@ export function assertState(expectedState : string) : void {
     });
 }
 
+export function assertStateDefinition(expectedState : string) : void {
+    withSelection((info) => {
+        cy.get("#FrameContainer_-2 .frame-header").first().within((h) => cy.get(".labelSlot-input,.frameColouredLabel").then((parts) => {
+            let s = "";
+            if (!parts) {
+                // Try to debug an occasional seemingly impossible failure:
+                cy.task("log", "Parts is null which I'm sure shouldn't happen, came from frame: " + h);
+            }
+            // Since we're in an if frame, we ignore the first and last part:
+            for (let i = 1; i < parts.length - 1; i++) {
+                const p : any = parts[i];
+
+                let text = p.value || p.textContent || "";
+
+                // If we're the focused slot, put a dollar sign in to indicate the current cursor position:
+                if (info.id === p.getAttribute("id") && info.cursorPos >= 0) {
+                    text = text.substring(0, info.cursorPos) + "$" + text.substring(info.cursorPos);
+                }
+                // Don't put curly brackets around strings, operators or brackets:
+                if (!p.classList.contains("string-slot") && !p.classList.contains("operator-slot") && !/[([)\]$]/.exec(p.textContent)) {
+                    text = "{" + text + "}";
+                }
+                s += text;
+            }
+            // There is no correspondence for _ (indicating a null operator) in the Strype interface so just ignore that:
+            expect(s).to.equal(expectedState.replaceAll("_", ""));
+        }));
+    });
+}
+
 function withSelection(inner : (arg0: { id: string, cursorPos : number }) => void) : void {
     // We need a delay to make sure last DOM update has occurred:
     cy.wait(200);

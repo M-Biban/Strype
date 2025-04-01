@@ -31,7 +31,7 @@
                 </b-card>
             </div>
         </div>  
-        <b-modal v-model="showModal" title="External" @ok="submitForm" content-class="my-modal-class" header-class="modal-header" hide-footer>
+        <b-modal v-model="showModal" title="Upload Tutorial" @ok="submitForm" content-class="my-modal-class" header-class="modal-header" hide-footer>
             <div class="modal-body">
             <p class="modal-title">Load the link below</p>
             <b-form @submit.prevent="submitForm">
