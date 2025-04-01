@@ -16,27 +16,12 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 
 import {assertStateDefinition} from "../support/expression-test-support";
 
-// export function testSelection(code : string, selectKeys: string, expectedAfterDeletion : string) : void {
-//     it("Tests " + code, () => {
-//         focusEditor();
-//         cy.get("body").type("{backspace}{backspace}i");
-//         assertState("{$}");
-//         cy.get("body").type(" " + code);
-//         cy.get("body").type(selectKeys);
-//         cy.get("body").type("{del}");
-//         assertState(expectedAfterDeletion);
-//     });
-// }
 
 
 
 describe("Tutorial Link Navigation", () => {
     // Must clear all local storage between tests to reset the state:
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test
-        }
         cy.clearLocalStorage();
         cy.visit("/",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -59,10 +44,6 @@ describe("Tutorial Link Navigation", () => {
 
 describe("Tutorials Page", () => {
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test
-        }
         cy.clearLocalStorage();
         cy.visit("/editor/#/tutorials",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -101,10 +82,6 @@ describe("Tutorials Page", () => {
 
 describe("Upload Tutorial", () => {
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test
-        }
         cy.clearLocalStorage();
         cy.visit("/editor/#/tutorials",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -163,10 +140,6 @@ describe("Upload Tutorial", () => {
 
 describe("Complete tutorial", () => {
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test
-        }
         cy.visit("/editor/#/tutPrimes");
     });
     it("Goes to the primes tutorial page", () => {
