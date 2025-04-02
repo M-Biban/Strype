@@ -332,8 +332,6 @@ export default Vue.extend({
                     let expectedOutput = test.expectedOutput.map((out) => ("print(\"" + out + "\")")).join("\n");
 
                     userCode = userCode + "\nprint(\"Expected output: \")\n"+expectedOutput+"\nprint(\"Actual output: \")\n"+functionCalls;
-
-                    console.log(userCode);
                 }
 
                 // Trigger the actual Python code execution launch
@@ -342,7 +340,6 @@ export default Vue.extend({
                     if(test){
                         let count = 0;
                         const failed = [];
-                        console.log(pythonConsole.value);
                         const split = pythonConsole.value.split("Actual output: \n");
                         const endResult = split[1].trim().split("\n");
                         const expected = split[0].trim().split("Expected output: \n")[1].trim().split("\n");

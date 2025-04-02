@@ -10,8 +10,6 @@ const tutorialRoutes = Object.values(Tutorials).map((tutorial) => ({
     component: TutPage1,
 }));
 
-console.log(tutorialRoutes);
-
 Vue.use(Router);
 
 export default new Router({

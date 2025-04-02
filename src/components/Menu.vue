@@ -635,14 +635,12 @@ export default Vue.extend({
             // Reset the temporary sync file flag
             this.tempSyncTarget = this.appStore.syncTarget;
             if (this.isUrlTutorial) {
-                console.log("url tut");
                 const emitPayload: AppEvent = { requestAttention: true };
                 emitPayload.message = this.$i18n.t("appMessage.editorFileUpload").toString();
                 this.$emit("app-showprogress", emitPayload);
 
                 try {
                     const tutorialCode = await useStore().fetchTutorialInitialCode(this.$route.query.file as string);
-                    console.log("codeL " + tutorialCode);
                     if (tutorialCode.trimStart().startsWith("{")) {
                         await this.appStore.setStateFromJSONStr({
                             stateJSONStr: tutorialCode,

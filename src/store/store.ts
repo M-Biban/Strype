@@ -2821,7 +2821,6 @@ export const useStore = defineStore("app", {
         initialiseTutorialState(path: string, isSharedUrl: boolean) {
             const is: TutorialObject = Tutorials[path];
             if(!isSharedUrl){
-                console.log("here inside");
                 this.frameObjects = cloneDeep(is.initialState);
                 this.nextAvailableId = is.nextAvailableId; 
             } 

@@ -92,7 +92,6 @@ export default Vue.extend({
 
     methods: {
         submitForm(): void {
-            console.log("submit");
             this.$router.push({
                 name: "URLTutorialPage",
                 query: {file: this.link},
