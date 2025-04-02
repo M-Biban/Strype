@@ -46,12 +46,8 @@ describe("Tutorial Link Navigation", () => {
     
 });
 
-describe("Tutorials Page", () => {
+describe("Tutorials Page", {env: { VUE_APP_MICROBIT: false }}, () => {
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test setup for microbit mode
-        }
         cy.clearLocalStorage();
         cy.visit("/editor/#/tutorials",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -150,20 +146,22 @@ describe("Upload Tutorial", () => {
     
 });
 
-describe("Complete tutorial", () => {
+describe("Complete tutorial",{env: { VUE_APP_PYTHON: true }}, () => {
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test setup for microbit mode
-        }
         cy.visit("/editor/#/tutPrimes");
     });
     it("Goes to the primes tutorial page", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.url().should("include", "/tutPrimes");
         assertStateDefinition("{isPrime}({num}");
     });
 
     it("Opens hint modal if clicked", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get("#hint-Test\\ 1").click();
         cy.get("#modal-scrollable").should("be.visible");
 
@@ -174,6 +172,9 @@ describe("Complete tutorial", () => {
     });
 
     it("handles the case of tests passing correctly", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get("#frame_id_-2").type("inum<=1{enter}rFalse");
         cy.get("#test-Test\\ 1").click();
 
@@ -201,6 +202,9 @@ describe("Complete tutorial", () => {
     });
 
     it("Next carousel slide if button is pressed", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get(".carousel-control-next").click();
 
         cy.wait(500); // wait for subtask to change
@@ -227,6 +231,9 @@ describe("Complete tutorial", () => {
     });
 
     it("handles the case of tests failing correctly", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get("#frame_id_-2").type("inum<1{enter}rFalse");
         cy.get(".carousel-inner .carousel-item.active")
             .invoke("text")

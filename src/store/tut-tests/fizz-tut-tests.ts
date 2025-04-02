@@ -3,7 +3,7 @@ import { TestObjects } from "@/types/tutorial-types";
 const FizzTutTests: TestObjects = {
     1 : {
         name: "Test 1",
-        description: "Print the numbers 1-number (inclusive) normally",
+        description: "Add numbers 1-number (inclusive) to the array",
         hint: "Use a for loop to print the numbers. Try using the function \"range(from, to)\"",
         expectedOutput: ["[1, 2, 3, 4]", "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"],
         test: ["fizzbuzz(4)", "fizzbuzz(10)"],

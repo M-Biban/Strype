@@ -2843,7 +2843,6 @@ export const useStore = defineStore("app", {
             try{
                 const response = await axios.get(filePath);
                 const tut = this.parseTutorial(response.data, filePath) as TutorialObject;
-                
                 return tut;
             } 
             catch(error){
@@ -2864,7 +2863,6 @@ export const useStore = defineStore("app", {
 
                 const trimmedKey = key.trim();
                 const trimmedValue = value.trim();
-
                 switch(trimmedKey){
                 case "name":
                     tut.name = trimmedValue;
@@ -2900,7 +2898,6 @@ export const useStore = defineStore("app", {
 
                 const trimmedKey = key.trim();
                 const trimmedValue = value.trim();
-
                 switch(trimmedKey){
                 case "name":
                     if (currentTest.name){
@@ -2928,12 +2925,12 @@ export const useStore = defineStore("app", {
                     currentTests[counter + 1] = currentTest as TestObject;
                 }
             });
-
             
             return currentTests as TestObjects;
         },
 
         async fetchTutorialInitialCode(filePath: string) : Promise<string> {
+
             try{
                 const tutorial = await this.createNewTutorial(filePath);
                 const tutorialcode = tutorial.tutorialCode || "";

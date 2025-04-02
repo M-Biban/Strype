@@ -21,7 +21,7 @@ const PrimeTutTests: TestObjects = {
         name: "Test 3",
         description: "Handle the case if no divisors are found",
         hint: "Return True if no Divisors are found",
-        expectedOutput: ["True", "True", "True", "Tr"],
+        expectedOutput: ["True", "True", "True", "True"],
         test: ["isPrime(2)", "isPrime(3)", "isPrime(5)", "isPrime(11)"],
         complete: false,
     },
