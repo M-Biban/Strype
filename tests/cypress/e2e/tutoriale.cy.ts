@@ -34,6 +34,9 @@ describe("Tutorial Link Navigation", () => {
     });
   
     it("Should open the hamburger menu and navigate to the tutorial", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         // Open the hamburger menu
         cy.get("button#showHideMenu").click(); 
   
@@ -56,16 +59,25 @@ describe("Tutorials Page", {env: { VUE_APP_MICROBIT: false }}, () => {
     });
 
     it("displays the correct tutorial list", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get(".card-style").should("have.length.greaterThan", 0);
     });
 
     it("Navigates to a tutorial when clicked", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get(".card-style").first().click();
 
         cy.url().should("include", "/tut");
     });
 
     it("Opens and closes the import tutorial modal", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get(".new-tutorial-button").first().click();
     
         cy.get(".modal-body").should("be.visible");
@@ -75,6 +87,9 @@ describe("Tutorials Page", {env: { VUE_APP_MICROBIT: false }}, () => {
     });
     
     it("Opens and closes the info modal", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get(".new-tutorial-button").last().click(); // Click the info button
         cy.contains("Template for custom tutorials").should("be.visible"); // Check if modal opens
         cy.get(".modal-body").should("be.visible"); 
@@ -86,10 +101,6 @@ describe("Tutorials Page", {env: { VUE_APP_MICROBIT: false }}, () => {
 
 describe("Upload Tutorial", () => {
     beforeEach(() => {
-        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
-            cy.log("Skipping test in microbit mode");
-            return; // Skip the test setup for microbit mode
-        }
         cy.clearLocalStorage();
         cy.visit("/editor/#/tutorials",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -98,6 +109,9 @@ describe("Upload Tutorial", () => {
     });
 
     it("Fills and submits the import tutorial form", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         cy.get(".new-tutorial-button").first().click();
     
         cy.get("#tutorial-link").type("https://raw.githubusercontent.com/M-Biban/HotelAnalysis/refs/heads/main/code.txt");
@@ -117,6 +131,9 @@ describe("Upload Tutorial", () => {
     });
 
     it("Display default editor if tutorial invalid", () => {
+        if (Cypress.env("mode") === "microbit") {
+            return cy.log("Skipping test in microbit mode");
+        }
         // Disable console error specifically for this test
         cy.on("window:before:load", (win) => {
             win.console.error = (message) => {
