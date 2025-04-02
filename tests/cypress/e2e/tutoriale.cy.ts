@@ -22,6 +22,10 @@ import {assertStateDefinition} from "../support/expression-test-support";
 describe("Tutorial Link Navigation", () => {
     // Must clear all local storage between tests to reset the state:
     beforeEach(() => {
+        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
+            cy.log("Skipping test in microbit mode");
+            return; // Skip the test setup for microbit mode
+        }
         cy.clearLocalStorage();
         cy.visit("/",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -44,6 +48,10 @@ describe("Tutorial Link Navigation", () => {
 
 describe("Tutorials Page", () => {
     beforeEach(() => {
+        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
+            cy.log("Skipping test in microbit mode");
+            return; // Skip the test setup for microbit mode
+        }
         cy.clearLocalStorage();
         cy.visit("/editor/#/tutorials",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -82,6 +90,10 @@ describe("Tutorials Page", () => {
 
 describe("Upload Tutorial", () => {
     beforeEach(() => {
+        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
+            cy.log("Skipping test in microbit mode");
+            return; // Skip the test setup for microbit mode
+        }
         cy.clearLocalStorage();
         cy.visit("/editor/#/tutorials",  {onBeforeLoad: (win) => {
             win.localStorage.clear();
@@ -140,6 +152,10 @@ describe("Upload Tutorial", () => {
 
 describe("Complete tutorial", () => {
     beforeEach(() => {
+        if (Cypress.env("VUE_APP_MICROBIT") === "true") {
+            cy.log("Skipping test in microbit mode");
+            return; // Skip the test setup for microbit mode
+        }
         cy.visit("/editor/#/tutPrimes");
     });
     it("Goes to the primes tutorial page", () => {
